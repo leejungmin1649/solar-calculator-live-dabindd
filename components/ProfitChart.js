@@ -16,8 +16,9 @@ export function ProfitChart({ data, breakEvenYear }) {
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <XAxis dataKey="year" />
-          <YAxis tickFormatter={(value) => \`\${Math.round(value / 1000000)}M\`} />
-          <Tooltip formatter={(value) => \`\${value.toLocaleString()} 원\`} />
+          {/* ✅ 백틱 대신 일반 문자열 연결로 수정 */}
+          <YAxis tickFormatter={(value) => Math.round(value / 1000000) + 'M'} />
+          <Tooltip formatter={(value) => value.toLocaleString() + ' 원'} />
           <Legend />
           <Line type="monotone" dataKey="netProfit" stroke="#82ca9d" name="연간 순수익" dot />
           <Line type="monotone" dataKey="cumulativeProfit" stroke="#8884d8" name="누적 수익" dot />
