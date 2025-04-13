@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import font from '../public/NanumGothic.js';
+import font from '../components/NanumGothic.js';
 
 export default function PdfExport({ summary }) {
   const handleDownload = () => {
