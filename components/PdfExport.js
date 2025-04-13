@@ -1,13 +1,13 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import font from '../components/NanumGothic.js';
+import NanumGothic from './NanumGothic.js'; // components 폴더 안에 위치한 폰트 파일
 
 export default function PdfExport({ summary }) {
   const handleDownload = () => {
     const doc = new jsPDF();
 
-    // 한글 폰트 등록
-    doc.addFileToVFS('NanumGothic.ttf', font);
+    // ✅ 한글 폰트 등록 및 설정
+    doc.addFileToVFS('NanumGothic.ttf', NanumGothic);
     doc.addFont('NanumGothic.ttf', 'NanumGothic', 'normal');
     doc.setFont('NanumGothic');
 
@@ -21,11 +21,23 @@ export default function PdfExport({ summary }) {
       ['연간 원리금 상환', `${summary?.yearlyRepayment?.toLocaleString()} 원`],
       ['순수익', `${summary?.netProfit?.toLocaleString()} 원`],
       ['자기자본 수익률', `${summary?.roi}%`],
-      ['회수기간', typeof summary?.payback === 'number' ? `${summary?.payback} 년` : '-'],
+      ['회수기간', typeof summary?.payback === 'number' ? `${summary?.payback} 년` : '-']
     ];
 
-    doc.autoTable({ startY: 30, head: [['항목', '값']], body: rows });
-    doc.text('※ 본 수지분석표는 참고용이며, 법적 효력이 없습니다.', 14, doc.lastAutoTable.finalY + 10);
+    doc.autoTable({
+      startY: 30,
+      head: [['항목', '값']],
+      body: rows,
+      styles: { font: 'NanumGothic', fontSize: 11 }
+    });
+
+    doc.setFontSize(10);
+    doc.text(
+      '※ 본 계산기는 추정치를 기반으로 작성된 참고 자료이며, 법적 효력이 없습니다.',
+      14,
+      doc.lastAutoTable.finalY + 12
+    );
+
     doc.save('태양광_수익성_분석.pdf');
   };
 
