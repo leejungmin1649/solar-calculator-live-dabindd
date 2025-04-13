@@ -45,6 +45,7 @@ export function CalculatorForm({ onDataChange }) {
   const yearlyRepayment = Math.round(pmt * 12);
   const netProfit = revenue - operationCost - yearlyRepayment;
   const payback = netProfit > 0 ? Math.ceil(equity / netProfit) : '-';
+  const roi = netProfit > 0 ? ((netProfit / equity) * 100).toFixed(1) : '-';
 
   useEffect(() => {
     const data = [];
@@ -62,38 +63,41 @@ export function CalculatorForm({ onDataChange }) {
   }, [form]);
 
   return (
-    <div className="grid grid-cols-1 gap-3">
-      {[
-        ['capacity', '설치용량 (kW)'],
-        ['hours', '일일 발전시간 (h)'],
-        ['smp', 'SMP 단가 (원/kWh)'],
-        ['rec', 'REC 단가 (원/kWh)'],
-        ['weight', 'REC 가중치'],
-        ['operationCost', '운영비용 (연간, 원)'],
-        ['equity', '투자금액 (원)'],
-        ['loan', '대출금 (원)'],
-        ['interest', '이자율 (%)'],
-        ['term', '상환기간 (년)'],
-      ].map(([name, label]) => (
-        <div key={name}>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-          <input
-            name={name}
-            value={form[name]}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-        </div>
-      ))}
+    <div className="bg-gray-900 text-white p-6 rounded-lg shadow-md">
+      <div className="grid grid-cols-1 gap-4">
+        {[
+          ['capacity', '설치용량 (kW)'],
+          ['hours', '일일 발전시간 (h)'],
+          ['smp', 'SMP 단가 (원/kWh)'],
+          ['rec', 'REC 단가 (원/kWh)'],
+          ['weight', 'REC 가중치'],
+          ['operationCost', '운영비용 (연간, 원)'],
+          ['equity', '투자금액 (자기자본, 원)'],
+          ['loan', '대출금 (원)'],
+          ['interest', '이자율 (%)'],
+          ['term', '상환기간 (년)'],
+        ].map(([name, label]) => (
+          <div key={name}>
+            <label className="block text-sm font-medium mb-1">{label}</label>
+            <input
+              name={name}
+              value={form[name]}
+              onChange={handleChange}
+              className="bg-gray-800 text-white border border-gray-700 rounded-md p-2 w-full text-sm"
+            />
+          </div>
+        ))}
 
-      <h2 className="mt-6 mb-2 text-lg font-semibold">결과 요약</h2>
-      <div className="mt-2 text-gray-700 text-sm space-y-1">
-        <div>예상 발전량: {yearlyGen.toLocaleString()} kWh</div>
-        <div>총 수익: {revenue.toLocaleString()} 원</div>
-        <div>운영비: {operationCost.toLocaleString()} 원</div>
-        <div>연간 원리금 상환: {isNaN(yearlyRepayment) ? '-' : yearlyRepayment.toLocaleString()} 원</div>
-        <div>순수익: {isNaN(netProfit) ? '-' : netProfit.toLocaleString()} 원</div>
-        <div>회수기간 (자기자본 기준): {typeof payback === 'number' ? `${payback} 년` : '-'} </div>
+        <h2 className="mt-6 mb-2 text-lg font-semibold text-white">결과 요약</h2>
+        <div className="mt-2 text-sm space-y-1">
+          <div>예상 발전량: {yearlyGen.toLocaleString()} kWh</div>
+          <div>총 수익: {revenue.toLocaleString()} 원</div>
+          <div>운영비: {operationCost.toLocaleString()} 원</div>
+          <div>연간 원리금 상환: {isNaN(yearlyRepayment) ? '-' : yearlyRepayment.toLocaleString()} 원</div>
+          <div>순수익: {isNaN(netProfit) ? '-' : netProfit.toLocaleString()} 원</div>
+          <div>자기자본 수익률: {roi === '-' ? '-' : `${roi}%`}</div>
+          <div>회수기간 (자기자본 기준): {typeof payback === 'number' ? `${payback} 년` : '-'}</div>
+        </div>
       </div>
     </div>
   );
