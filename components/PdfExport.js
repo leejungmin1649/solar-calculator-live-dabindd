@@ -1,12 +1,12 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import NanumGothic from './NanumGothic.js'; // components 폴더 안에 위치한 폰트 파일
+import NanumGothic from './NanumGothic.js';
 
 export default function PdfExport({ summary }) {
   const handleDownload = () => {
     const doc = new jsPDF();
 
-    // ✅ 한글 폰트 등록 및 설정
+    // 폰트 등록
     doc.addFileToVFS('NanumGothic.ttf', NanumGothic);
     doc.addFont('NanumGothic.ttf', 'NanumGothic', 'normal');
     doc.setFont('NanumGothic');
