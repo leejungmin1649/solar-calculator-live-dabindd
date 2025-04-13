@@ -1,13 +1,13 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import font from '../public/NanumGothic.js';
+import NanumGothic from '../public/NanumGothic.js'; // 한글 폰트 import
 
 export default function PdfExport({ summary }) {
   const handleDownload = () => {
     const doc = new jsPDF();
 
-    // 한글 폰트 등록
-    doc.addFileToVFS('NanumGothic.ttf', font);
+    // ✅ 한글 폰트 등록 및 설정
+    doc.addFileToVFS('NanumGothic.ttf', NanumGothic);
     doc.addFont('NanumGothic.ttf', 'NanumGothic', 'normal');
     doc.setFont('NanumGothic');
 
@@ -25,7 +25,15 @@ export default function PdfExport({ summary }) {
     ];
 
     doc.autoTable({ startY: 30, head: [['항목', '값']], body: rows });
-    doc.text('※ 본 계산기는 참고용이며, 법적 효력이 없습니다.', 14, doc.lastAutoTable.finalY + 10);
+
+    // 하단 문구 추가
+    doc.setFontSize(10);
+    doc.text(
+      '※ 본 계산기는 추정치를 기반으로 작성된 참고 자료이며, 법적 효력이 없습니다.',
+      14,
+      doc.lastAutoTable.finalY + 12
+    );
+
     doc.save('태양광_수익성_분석.pdf');
   };
 
