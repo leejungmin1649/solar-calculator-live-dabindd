@@ -16,7 +16,7 @@ export function CalculatorForm({ onDataChange }) {
     rec: 70,
     weight: 1.5,
     operationCost: 0,
-    equity: '70,000,000',
+    equity: '80,000,000',
     loan: '150,000,000',
     interest: 5.8,
     term: 10
