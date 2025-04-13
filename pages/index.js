@@ -37,7 +37,7 @@ export default function Home() {
       </div>
 
       <footer className="mt-12 text-xs text-gray-400 text-center border-t border-gray-700 pt-4 leading-relaxed">
-        ※ 본 수지분석표는 추정치를 기반으로 작성된 자료로,<br />
+        ※ 본 계산기는 추정치를 기반으로 작성된 자료로,<br />
         실제 수익과 차이가 발생할 수 있습니다. 해당 자료는 참고용이며, 법적 효력이 없음을 안내드립니다.
       </footer>
     </main>
