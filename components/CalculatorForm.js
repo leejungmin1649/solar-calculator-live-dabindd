@@ -59,7 +59,16 @@ export function CalculatorForm({ onDataChange }) {
         breakEvenYear = y;
       }
     }
-    onDataChange?.(data, breakEvenYear);
+    const summary = {
+      yearlyGen,
+      revenue,
+      operationCost,
+      yearlyRepayment,
+      netProfit,
+      roi,
+      payback
+    };
+    onDataChange?.(data, breakEvenYear, summary);
   }, [form]);
 
   return (
@@ -82,7 +91,7 @@ export function CalculatorForm({ onDataChange }) {
             name={name}
             value={form[name]}
             onChange={handleChange}
-            className="bg-gray-800 text-white border border-gray-600 rounded-md p-2 w-full text-sm"
+            className="w-full px-4 py-2 text-sm text-white bg-gray-900 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
       ))}
