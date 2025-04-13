@@ -21,11 +21,11 @@ export default function PdfExport({ summary }) {
       ['연간 원리금 상환', `${summary?.yearlyRepayment?.toLocaleString()} 원`],
       ['순수익', `${summary?.netProfit?.toLocaleString()} 원`],
       ['자기자본 수익률', `${summary?.roi}%`],
-      ['회수기간', typeof summary?.payback === 'number' ? `${summary?.payback} 년` : '-'],
+      ['회수기간', typeof summary?.payback === 'number' ? `${summary?.payback} 년` : '-']
     ];
 
     doc.autoTable({ startY: 30, head: [['항목', '값']], body: rows });
-    doc.text('※ 본 수지분석표는 참고용이며, 법적 효력이 없습니다.', 14, doc.lastAutoTable.finalY + 10);
+    doc.text('※ 본 계산기는 참고용이며, 법적 효력이 없습니다.', 14, doc.lastAutoTable.finalY + 10);
     doc.save('태양광_수익성_분석.pdf');
   };
 
