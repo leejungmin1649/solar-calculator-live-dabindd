@@ -9,10 +9,9 @@ import {
   ReferenceLine
 } from 'recharts';
 
-export default function AnnualProfitChart({ data, breakEvenYear }) {
+export function ProfitChart({ data, breakEvenYear }) {
   return (
     <div className="text-white">
-      {/* 중복 제목 제거 */}
       <h2 className="text-lg font-semibold mb-2">연간 수익 및 손익분기점</h2>
 
       <ResponsiveContainer width="100%" height={300}>
