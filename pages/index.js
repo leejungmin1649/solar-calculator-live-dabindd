@@ -2,10 +2,34 @@ import Head from 'next/head';
 import { useState } from 'react';
 import { CalculatorForm } from '../components/CalculatorForm';
 import { ProfitChart } from '../components/ProfitChart';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 export default function Home() {
   const [chartData, setChartData] = useState([]);
   const [breakEvenYear, setBreakEvenYear] = useState(null);
+  const [summary, setSummary] = useState(null);
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text('태양광 수익성 계산 요약', 20, 20);
+    doc.setFontSize(10);
+
+    const rows = [
+      ['예상 발전량', `${summary?.yearlyGen?.toLocaleString()} kWh`],
+      ['총 수익', `${summary?.revenue?.toLocaleString()} 원`],
+      ['운영비', `${summary?.operationCost?.toLocaleString()} 원`],
+      ['연간 원리금 상환', `${summary?.yearlyRepayment?.toLocaleString()} 원`],
+      ['순수익', `${summary?.netProfit?.toLocaleString()} 원`],
+      ['자기자본 수익률', `${summary?.roi || '-'}%`],
+      ['회수기간', typeof summary?.payback === 'number' ? `${summary?.payback} 년` : '-']
+    ];
+
+    doc.autoTable({ startY: 30, head: [['항목', '값']], body: rows });
+    doc.text('※ 본 계산기는 참고용이며, 법적 효력이 없습니다.', 14, doc.lastAutoTable.finalY + 10);
+    doc.save('수익성_요약.pdf');
+  };
 
   return (
     <div className="bg-gray-900 min-h-screen text-white p-4 sm:p-8">
@@ -24,13 +48,23 @@ export default function Home() {
         <h1 className="text-2xl font-bold">태양광 수익성 계산기</h1>
       </header>
 
-      <CalculatorForm onDataChange={(data, year) => {
+      <CalculatorForm onDataChange={(data, year, summaryData) => {
         setChartData(data);
         setBreakEvenYear(year);
+        setSummary(summaryData);
       }} />
 
       <div className="mt-8">
         <ProfitChart data={chartData} breakEvenYear={breakEvenYear} />
+      </div>
+
+      <div className="flex justify-center mt-6">
+        <button
+          onClick={handleDownloadPDF}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded shadow"
+        >
+          PDF 다운로드
+        </button>
       </div>
 
       <div className="mt-10 text-sm text-gray-300 space-y-1">
