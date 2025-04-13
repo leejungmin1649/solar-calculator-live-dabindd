@@ -91,7 +91,7 @@ export function CalculatorForm({ onDataChange }) {
             name={name}
             value={form[name]}
             onChange={handleChange}
-            className="w-full px-4 py-2 text-sm text-white bg-gray-900 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full h-10 px-4 text-sm text-black bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
       ))}
