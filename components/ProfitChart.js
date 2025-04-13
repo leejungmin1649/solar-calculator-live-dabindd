@@ -1,25 +1,35 @@
-import React from 'react';
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  ReferenceLine
 } from 'recharts';
 
-export function ProfitChart({ data, breakEvenYear }) {
-  if (!data || data.length === 0) {
-    return <div className="text-gray-500 mt-4">수익 그래프를 계산 중입니다...</div>;
-  }
-
+export default function AnnualProfitChart({ data, breakEvenYear }) {
   return (
-    <div className="mt-10">
-      <h2 className="text-lg font-bold mb-2">연간 수익 및 손익분기점</h2>
+    <div className="text-white">
+      {/* 중복 제목 제거 */}
+      <h2 className="text-lg font-semibold mb-2">연간 수익 및 손익분기점</h2>
+
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <XAxis dataKey="year" />
-          <YAxis tickFormatter={(tick) => `${(tick / 1000000).toFixed(1)}M`} />
+          <YAxis tickFormatter={(v) => `${(v / 1000000).toFixed(1)}백만원`} />
           <Tooltip formatter={(value) => `${value.toLocaleString()} 원`} />
-          <Line type="monotone" dataKey="netProfit" name="연간 순이익" stroke="#82ca9d" />
-          <Line type="monotone" dataKey="cumulativeProfit" name="누적 수익" stroke="#8884d8" />
+          <Legend />
+          <Line type="monotone" dataKey="netProfit" stroke="#82ca9d" name="순수익" dot />
+          <Line type="monotone" dataKey="cumulativeProfit" stroke="#8884d8" name="누적수익" dot />
           {breakEvenYear && (
-            <ReferenceLine x={breakEvenYear} label="손익분기점" stroke="red" strokeDasharray="3 3" />
+            <ReferenceLine
+              x={breakEvenYear}
+              stroke="red"
+              strokeDasharray="3 3"
+              label="손익분기점"
+            />
           )}
         </LineChart>
       </ResponsiveContainer>
