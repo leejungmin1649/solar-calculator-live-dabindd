@@ -42,10 +42,12 @@ export function CalculatorForm({ onDataChange }) {
   const monthlyRate = interest / 100 / 12;
   const nper = term * 12;
   const pmt = calculatePMT(monthlyRate, nper, loan);
-  const yearlyRepayment = Math.round(pmt * 12);
+  const yearlyRepayment = loan > 0 ? Math.round(pmt * 12) : 0;
   const netProfit = revenue - operationCost - yearlyRepayment;
   const payback = netProfit > 0 ? Math.ceil(equity / netProfit) : '-';
-  const roi = netProfit > 0 ? ((netProfit / equity) * 100).toFixed(1) : '-';
+
+  // ✅ 수정된 ROI 계산 (대출금 없어도 계산됨)
+  const roi = equity > 0 ? ((netProfit / equity) * 100).toFixed(1) : '-';
 
   useEffect(() => {
     const data = [];
@@ -103,7 +105,7 @@ export function CalculatorForm({ onDataChange }) {
         <div>📌 예상 발전량: {yearlyGen.toLocaleString()} kWh</div>
         <div>💰 총 수익: {revenue.toLocaleString()} 원</div>
         <div>🛠️ 운영비: {operationCost.toLocaleString()} 원</div>
-        <div>🏦 연간 원리금 상환: {isNaN(yearlyRepayment) ? '-' : yearlyRepayment.toLocaleString()} 원</div>
+        <div>🏦 연간 원리금 상환: {yearlyRepayment > 0 ? yearlyRepayment.toLocaleString() + ' 원' : '0 원'}</div>
         <div>📈 순수익: {isNaN(netProfit) ? '-' : netProfit.toLocaleString()} 원</div>
         <div>📊 자기자본 수익률: {roi === '-' ? '-' : `${roi}%`}</div>
         <div>⏱️ 회수기간: {typeof payback === 'number' ? `${payback} 년` : '-'}</div>
