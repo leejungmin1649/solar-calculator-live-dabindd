@@ -1,13 +1,11 @@
-
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import NanumGothic from './NanumGothic.js';
+import NanumGothic from './NanumGothic.js'; // default export가 있어야 함
 
 export default function PdfExport({ summary }) {
   const handleDownload = () => {
     const doc = new jsPDF();
 
-    // 폰트 등록
     doc.addFileToVFS('NanumGothic.ttf', NanumGothic);
     doc.addFont('NanumGothic.ttf', 'NanumGothic', 'normal');
     doc.setFont('NanumGothic');
@@ -32,11 +30,12 @@ export default function PdfExport({ summary }) {
       styles: { font: 'NanumGothic', fontSize: 11 }
     });
 
+    const tableY = doc.lastAutoTable?.finalY || 40;
     doc.setFontSize(10);
     doc.text(
       '※ 본 계산기는 추정치를 기반으로 작성된 참고 자료이며, 법적 효력이 없습니다.',
       14,
-      doc.lastAutoTable.finalY + 12
+      tableY + 12
     );
 
     doc.save('태양광_수익성_분석.pdf');
