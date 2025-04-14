@@ -1,18 +1,26 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import NanumGothic from './NanumGothic_full.js'; // default export가 있어야 함
+import NanumGothic from './NanumGothic_full.js'; // 반드시 base64 포함된 default export
 
 export default function PdfExport({ summary }) {
   const handleDownload = () => {
+    if (!summary) {
+      alert('PDF로 출력할 데이터가 없습니다.');
+      return;
+    }
+
     const doc = new jsPDF();
 
+    // ✅ 한글 폰트 등록
     doc.addFileToVFS('NanumGothic.ttf', NanumGothic);
     doc.addFont('NanumGothic.ttf', 'NanumGothic', 'normal');
     doc.setFont('NanumGothic');
 
+    // ✅ 제목
     doc.setFontSize(14);
     doc.text('태양광 수익성 요약 보고서', 20, 20);
 
+    // ✅ 데이터 표 구성
     const rows = [
       ['예상 발전량', `${summary?.yearlyGen?.toLocaleString()} kWh`],
       ['총 수익', `${summary?.revenue?.toLocaleString()} 원`],
@@ -27,9 +35,19 @@ export default function PdfExport({ summary }) {
       startY: 30,
       head: [['항목', '값']],
       body: rows,
-      styles: { font: 'NanumGothic', fontSize: 11 }
+      styles: {
+        font: 'NanumGothic',
+        fontSize: 11,
+        cellPadding: 3,
+      },
+      headStyles: {
+        fillColor: [22, 163, 74], // emerald-600
+        textColor: 255,
+        fontStyle: 'bold',
+      }
     });
 
+    // ✅ 법적 고지 문구
     const tableY = doc.lastAutoTable?.finalY || 40;
     doc.setFontSize(10);
     doc.text(
@@ -38,6 +56,7 @@ export default function PdfExport({ summary }) {
       tableY + 12
     );
 
+    // ✅ 저장
     doc.save('태양광_수익성_분석.pdf');
   };
 
