@@ -14,7 +14,6 @@ export default function CalculatorForm({ onDataChange }) {
     term: '10'
   });
 
-  // 천단위 콤마 포맷 함수
   const formatNumber = (value) => {
     const number = value.toString().replace(/,/g, '');
     if (isNaN(Number(number))) return '';
@@ -31,7 +30,6 @@ export default function CalculatorForm({ onDataChange }) {
   const parseNumber = (v) => parseFloat((v || '0').toString().replace(/,/g, '')) || 0;
 
   useEffect(() => {
-    // 숫자 파싱
     const capacity = parseNumber(form.capacity);
     const hours = parseNumber(form.hours);
     const smp = parseNumber(form.smp);
@@ -43,21 +41,16 @@ export default function CalculatorForm({ onDataChange }) {
     const interest = parseNumber(form.interest);
     const term = parseNumber(form.term);
 
-    // 계산
     const yearlyGen = capacity * 365 * hours;
     const revenue = yearlyGen * (smp + rec * weight);
     const monthlyRate = interest / 100 / 12;
     const nper = term * 12;
     const pmt = loan > 0 ? (monthlyRate * loan) / (1 - Math.pow(1 + monthlyRate, -nper)) : 0;
     const yearlyRepayment = loan > 0 ? Math.round(pmt * 12) : 0;
-
     const netProfit = revenue - operationCost - yearlyRepayment;
-
-    const roi = equity > 0 ? ((netProfit / equity) * 100).toFixed(1) : '-'; // ✅ 대출이 0이어도 ROI 계산
-
+    const roi = equity > 0 ? ((netProfit / equity) * 100).toFixed(1) : '-';
     const payback = netProfit > 0 ? Math.ceil(equity / netProfit) : '-';
 
-    // 연간 데이터 생성
     const data = Array.from({ length: term }, (_, i) => ({
       year: i + 1,
       netProfit,
@@ -80,7 +73,7 @@ export default function CalculatorForm({ onDataChange }) {
   }, [form]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {[
         ['capacity', '설치용량 (kW)'],
         ['hours', '일일 발전시간 (h)'],
@@ -94,12 +87,12 @@ export default function CalculatorForm({ onDataChange }) {
         ['term', '상환기간 (년)'],
       ].map(([name, label]) => (
         <div key={name}>
-          <label className="block mb-1">{label}</label>
+          <label className="block mb-1 font-medium text-sm">{label}</label>
           <input
             name={name}
             value={form[name]}
             onChange={handleChange}
-            className="w-full px-2 py-1 text-black rounded"
+            className="w-full h-11 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
       ))}
