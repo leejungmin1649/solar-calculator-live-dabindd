@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import NanumGothic from './NanumGothic.js'; // default export가 있어야 함
+import NanumGothic from './NanumGothic_full.js'; // default export가 있어야 함
 
 export default function PdfExport({ summary }) {
   const handleDownload = () => {
