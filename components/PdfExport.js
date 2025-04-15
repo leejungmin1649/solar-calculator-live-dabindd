@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import NanumGothic from './NanumGothic_full'; // ✅ 폰트 base64 불러오기
 
 export default function PdfExport({ summary, lang = 'ko' }) {
   const handleDownload = () => {
@@ -8,10 +9,14 @@ export default function PdfExport({ summary, lang = 'ko' }) {
 
     const doc = new jsPDF();
 
+    // ✅ 폰트 등록
+    doc.addFileToVFS('NanumGothic.ttf', NanumGothic);
+    doc.addFont('NanumGothic.ttf', 'NanumGothic', 'normal');
+    doc.setFont('NanumGothic');
+
     const isKo = lang === 'ko';
     const t = (en, ko) => (isKo ? ko : en);
 
-    doc.setFont('helvetica', 'normal'); // 기본 폰트 (한글 깨질 경우 NanumGothic Base64 사용 필요)
     doc.setFontSize(16);
     doc.text(t('Solar Profitability Summary Report', '태양광 수익성 요약 보고서'), 20, 20);
 
@@ -29,7 +34,7 @@ export default function PdfExport({ summary, lang = 'ko' }) {
       startY: 30,
       head: [[t('Item', '항목'), t('Value', '값')]],
       body: rows,
-      styles: { fontSize: 11 }
+      styles: { font: 'NanumGothic', fontSize: 11 } // ✅ 폰트 사용
     });
 
     const tableY = doc.lastAutoTable.finalY || 50;
