@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import NanumGothic from './NanumGothic_full';
 
-export default function PdfExport({ summary, lang = 'en' }) {
+export default function PdfExport({ summary, lang = 'ko' }) {
   const handleDownload = () => {
     const chart = document.querySelector('canvas');
     const chartImage = chart?.toDataURL('image/png');
@@ -43,8 +43,7 @@ export default function PdfExport({ summary, lang = 'en' }) {
       doc.addImage(chartImage, 'PNG', 14, tableY + 18, 180, 80);
     }
 
-    // Footer
-    const finalY = chartImage ? tableY + 105 : tableY + 20;
+    const finalY = chartImage ? tableY + 105 : tableY + 25;
     doc.setFontSize(10);
     doc.text(
       t(
@@ -61,11 +60,19 @@ export default function PdfExport({ summary, lang = 'en' }) {
   };
 
   return (
-    <button
-      onClick={handleDownload}
-      className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 mt-6 rounded shadow"
-    >
-      {lang === 'ko' ? '📄 PDF 다운로드' : '📄 Download PDF Report'}
-    </button>
+    <div className="flex gap-4 mt-6">
+      <button
+        onClick={() => handleDownload('ko')}
+        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded shadow"
+      >
+        📄 PDF 다운로드 (국문)
+      </button>
+      <button
+        onClick={() => handleDownload('en')}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
+      >
+        📄 Download PDF (EN)
+      </button>
+    </div>
   );
 }
