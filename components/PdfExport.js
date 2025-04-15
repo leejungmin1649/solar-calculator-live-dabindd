@@ -1,6 +1,5 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import NanumGothic from './NanumGothic_full';
 
 export default function PdfExport({ summary, lang = 'ko' }) {
   const handleDownload = () => {
@@ -8,13 +7,11 @@ export default function PdfExport({ summary, lang = 'ko' }) {
     const chartImage = chart?.toDataURL('image/png');
 
     const doc = new jsPDF();
-    doc.addFileToVFS('NanumGothic.ttf', NanumGothic);
-    doc.addFont('NanumGothic.ttf', 'NanumGothic', 'normal');
-    doc.setFont('NanumGothic');
 
     const isKo = lang === 'ko';
     const t = (en, ko) => (isKo ? ko : en);
 
+    doc.setFont('helvetica', 'normal'); // 기본 폰트 사용
     doc.setFontSize(16);
     doc.text(t('Solar Profitability Summary Report', '태양광 수익성 요약 보고서'), 20, 20);
 
@@ -32,7 +29,7 @@ export default function PdfExport({ summary, lang = 'ko' }) {
       startY: 30,
       head: [[t('Item', '항목'), t('Value', '값')]],
       body: rows,
-      styles: { font: 'NanumGothic', fontSize: 11 }
+      styles: { fontSize: 11 }
     });
 
     const tableY = doc.lastAutoTable.finalY || 50;
