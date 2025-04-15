@@ -1,2 +1,2 @@
-const NanumGothic = "AAEAAAALAIAAA..."; // ⚠️ 'data:font/truetype;base64,' 제거된 순수 base64
+const NanumGothic = "AAEAAAALAIAAA..."; // ⚠️ 'data:font/truetype;base64,' 없이
 export default NanumGothic;
