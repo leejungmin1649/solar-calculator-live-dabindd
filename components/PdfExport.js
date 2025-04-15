@@ -11,18 +11,18 @@ export default function PdfExport({ summary, lang = 'ko' }) {
     const isKo = lang === 'ko';
     const t = (en, ko) => (isKo ? ko : en);
 
-    doc.setFont('helvetica', 'normal'); // 기본 폰트 사용
+    doc.setFont('helvetica', 'normal'); // 기본 폰트 (한글 깨질 경우 NanumGothic Base64 사용 필요)
     doc.setFontSize(16);
     doc.text(t('Solar Profitability Summary Report', '태양광 수익성 요약 보고서'), 20, 20);
 
     const rows = [
-      [t('Expected Generation', '예상 발전량'), ${summary?.yearlyGen?.toLocaleString()} kWh],
-      [t('Total Revenue', '총 수익'), ${summary?.revenue?.toLocaleString()} KRW],
-      [t('Operating Cost', '운영비용'), ${summary?.operationCost?.toLocaleString()} KRW],
-      [t('Annual Loan Repayment', '연간 원리금 상환'), ${summary?.yearlyRepayment?.toLocaleString()} KRW],
-      [t('Net Profit', '순수익'), ${summary?.netProfit?.toLocaleString()} KRW],
-      [t('ROI (Equity)', '자기자본 수익률'), ${summary?.roi}%],
-      [t('Payback Period', '회수기간'), typeof summary?.payback === 'number' ? ${summary?.payback} ${t('years', '년')} : '-']
+      [t('Expected Generation', '예상 발전량'), `${summary?.yearlyGen?.toLocaleString()} kWh`],
+      [t('Total Revenue', '총 수익'), `${summary?.revenue?.toLocaleString()} KRW`],
+      [t('Operating Cost', '운영비용'), `${summary?.operationCost?.toLocaleString()} KRW`],
+      [t('Annual Loan Repayment', '연간 원리금 상환'), `${summary?.yearlyRepayment?.toLocaleString()} KRW`],
+      [t('Net Profit', '순수익'), `${summary?.netProfit?.toLocaleString()} KRW`],
+      [t('ROI (Equity)', '자기자본 수익률'), `${summary?.roi}%`],
+      [t('Payback Period', '회수기간'), typeof summary?.payback === 'number' ? `${summary?.payback} ${t('years', '년')}` : '-']
     ];
 
     doc.autoTable({
