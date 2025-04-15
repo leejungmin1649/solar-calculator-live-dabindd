@@ -1,3 +1,2 @@
-// ✅ 올바른 형태
-const NanumGothic = "data:font/truetype;charset=utf-8;base64,AAEAAA..."; // 실제 base64 전체
+const NanumGothic = "AAEAAAALAIAAA..."; // ⚠️ 'data:font/truetype;base64,' 제거된 순수 base64
 export default NanumGothic;
