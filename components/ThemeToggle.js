@@ -1,12 +1,21 @@
-'use client'; // ✅ Next.js 13+ App Router 사용 시 클라이언트 컴포넌트 선언
-
+'use client';
 import { useEffect, useState } from 'react';
 
 export default function ThemeToggle() {
   const [darkMode, setDarkMode] = useState(true);
 
+  // 최초 로드 시 로컬스토리지에서 설정 불러오기
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    setDarkMode(isDark);
+    document.documentElement.classList.toggle('dark', isDark);
+  }, []);
+
+  // 다크모드 상태 변경 시 HTML 클래스 & 로컬스토리지 저장
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
   return (
