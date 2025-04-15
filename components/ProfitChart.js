@@ -18,8 +18,20 @@ export default function ProfitChart({ data, breakEvenYear }) {
           <YAxis tickFormatter={(v) => `${(v / 1_000_000).toFixed(0)}M`} />
           <Tooltip formatter={(value) => `${value.toLocaleString()} 원`} />
           <Legend />
-          <Line type="monotone" dataKey="netProfit" name="연간 순수익" stroke="#34D399" dot />
-          <Line type="monotone" dataKey="cumulativeProfit" name="누적 수익" stroke="#818CF8" dot />
+          <Line
+            type="monotone"
+            dataKey="netProfit"
+            name="연간 순수익"
+            stroke="#34D399"
+            dot
+          />
+          <Line
+            type="monotone"
+            dataKey="cumulativeProfit"
+            name="누적 수익"
+            stroke="#818CF8"
+            dot
+          />
 
           {breakEvenYear && (
             <ReferenceLine
