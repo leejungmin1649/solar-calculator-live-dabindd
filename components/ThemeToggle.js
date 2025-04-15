@@ -1,4 +1,5 @@
-'use client';
+'use client'; // ✅ Next.js 13+ App Router 사용 시 클라이언트 컴포넌트 선언
+
 import { useEffect, useState } from 'react';
 
 export default function ThemeToggle() {
