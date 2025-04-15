@@ -1,15 +1,14 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import NanumGothic from './NanumGothic_full'; // ✅ 폰트 base64 불러오기
+import NanumGothic from './NanumGothic_full';
 
-export default function PdfExport({ summary, lang = 'ko' }) {
-  const handleDownload = () => {
+export default function PdfExport({ summary }) {
+  const handleDownload = (lang = 'ko') => {
     const chart = document.querySelector('canvas');
     const chartImage = chart?.toDataURL('image/png');
-
     const doc = new jsPDF();
 
-    // ✅ 폰트 등록
+    // 폰트 등록
     doc.addFileToVFS('NanumGothic.ttf', NanumGothic);
     doc.addFont('NanumGothic.ttf', 'NanumGothic', 'normal');
     doc.setFont('NanumGothic');
@@ -34,7 +33,7 @@ export default function PdfExport({ summary, lang = 'ko' }) {
       startY: 30,
       head: [[t('Item', '항목'), t('Value', '값')]],
       body: rows,
-      styles: { font: 'NanumGothic', fontSize: 11 } // ✅ 폰트 사용
+      styles: { font: 'NanumGothic', fontSize: 11 }
     });
 
     const tableY = doc.lastAutoTable.finalY || 50;
@@ -45,7 +44,6 @@ export default function PdfExport({ summary, lang = 'ko' }) {
       doc.addImage(chartImage, 'PNG', 14, tableY + 18, 180, 80);
     }
 
-    const finalY = chartImage ? tableY + 105 : tableY + 25;
     doc.setFontSize(10);
     doc.text(
       t(
@@ -53,11 +51,10 @@ export default function PdfExport({ summary, lang = 'ko' }) {
         '※ 본 보고서는 참고용이며, 실제 수익과 차이가 발생할 수 있으며 법적 효력이 없습니다.'
       ),
       14,
-      finalY
+      chartImage ? tableY + 105 : tableY + 25
     );
 
     doc.text(t('Company: Dabin ENC | www.dabinenc.com', '회사: 다빈이앤씨 | www.dabinenc.com'), 14, 285);
-
     doc.save(isKo ? '태양광_수익성_보고서.pdf' : 'solar_profitability_report.pdf');
   };
 
