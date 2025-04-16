@@ -13,6 +13,7 @@ export default function PdfExport({ summary }) {
 
     if (!svg) {
       alert('차트가 아직 로딩되지 않았습니다. 잠시 후 다시 시도해주세요.');
+      setLoading(false); // ✅ 누락 방지
       return;
     }
 
