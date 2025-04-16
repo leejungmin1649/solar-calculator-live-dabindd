@@ -6,7 +6,7 @@ import html2canvas from 'html2canvas';
 import NanumGothic from './NanumGothic_full';
 import { useState } from 'react';
 
-export default function PdfExport({ summary }) {
+export default function PdfExport({ summary, chartContent }) {
   const [loading, setLoading] = useState(false);
 
   const handleDownload = async (lang = 'ko') => {
@@ -84,21 +84,27 @@ export default function PdfExport({ summary }) {
   };
 
   return (
-    <div className="flex gap-4 mt-6">
-      <button
-        onClick={() => handleDownload('ko')}
-        disabled={loading}
-        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded shadow"
-      >
-        {loading ? '로딩 중...' : '📄 PDF 다운로드 (국문)'}
-      </button>
-      <button
-        onClick={() => handleDownload('en')}
-        disabled={loading}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
-      >
-        {loading ? 'Loading...' : '📄 Download PDF (EN)'}
-      </button>
-    </div>
+    <>
+      <div id="chart-wrapper">
+        {chartContent}
+      </div>
+
+      <div className="flex gap-4 mt-6">
+        <button
+          onClick={() => handleDownload('ko')}
+          disabled={loading}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded shadow"
+        >
+          {loading ? '로딩 중...' : '📄 PDF 다운로드 (국문)'}
+        </button>
+        <button
+          onClick={() => handleDownload('en')}
+          disabled={loading}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
+        >
+          {loading ? 'Loading...' : '📄 Download PDF (EN)'}
+        </button>
+      </div>
+    </>
   );
 }
