@@ -2,7 +2,7 @@
 
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import NanumGothic from './NanumGothic_full'; // ✅ base64 폰트
+import NanumGothic from './NanumGothic_full'; // ✅ base64 내장 폰트
 import { useState } from 'react';
 
 export default function PdfExport({ summary }) {
@@ -12,14 +12,13 @@ export default function PdfExport({ summary }) {
     const svg = document.querySelector('svg');
 
     if (!svg) {
-      alert('차트가 아직 로딩되지 않았습니다.');
+      alert('차트가 아직 로딩되지 않았습니다. 잠시 후 다시 시도해주세요.');
       return;
     }
 
     setLoading(true);
 
     try {
-      // ✅ SVG를 이미지로 변환
       const svgData = new XMLSerializer().serializeToString(svg);
       const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(svgBlob);
@@ -32,15 +31,13 @@ export default function PdfExport({ summary }) {
         canvas.width = 1000;
         canvas.height = 600;
         const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'white'; // 배경 흰색
+        ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(image, 0, 0);
 
         const chartImage = canvas.toDataURL('image/png');
-
         const doc = new jsPDF();
 
-        // ✅ 폰트 등록
         doc.addFileToVFS('NanumGothic.ttf', NanumGothic);
         doc.addFont('NanumGothic.ttf', 'NanumGothic', 'normal');
         doc.setFont('NanumGothic');
@@ -81,7 +78,7 @@ export default function PdfExport({ summary }) {
             '※ 본 보고서는 참고용이며, 실제 수익과 차이가 발생할 수 있으며 법적 효력이 없습니다.'
           ),
           14,
-          chartImage ? tableY + 105 : tableY + 25
+          tableY + 105
         );
 
         doc.text(
