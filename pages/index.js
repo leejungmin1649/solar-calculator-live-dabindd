@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { useState } from 'react';
 import CalculatorForm from '../components/CalculatorForm';
 import ProfitChart from '../components/ProfitChart';
-import PdfExport from '../components/PdfExport';
+import ExcelExport from '../components/ExcelExport'; // ✅ 변경된 부분
 import ThemeToggle from '../components/ThemeToggle';
 
 export default function Home() {
@@ -21,7 +21,7 @@ export default function Home() {
           <img src="/logo-dabin.png" alt="다빈이앤씨 로고" className="mx-auto w-32 h-auto mb-2" />
         </a>
         <h1 className="text-3xl font-bold tracking-tight text-emerald-400">☀️ 태양광 수익성 계산기</h1>
-        <p className="text-gray-400 mt-1 text-sm">실시간 수익 분석 & PDF 보고서 제공</p>
+        <p className="text-gray-400 mt-1 text-sm">실시간 수익 분석 & Excel 보고서 제공</p>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-10">
@@ -59,7 +59,7 @@ export default function Home() {
             </div>
 
             <div className="mt-6 text-center">
-              <PdfExport summary={summary} />
+              <ExcelExport summary={summary} chartData={chartData} />
             </div>
           </>
         )}
