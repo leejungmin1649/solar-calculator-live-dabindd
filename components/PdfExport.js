@@ -2,22 +2,13 @@
 
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import html2canvas from 'html2canvas';
-import NanumGothic from './NanumGothic_full';
+import NanumGothic from './NanumGothic_full'; // ✅ base64 내장 폰트
 
 export default function PdfExport({ summary }) {
-  const handleDownload = async (lang = 'ko') => {
-    const chartDiv = document.getElementById('chart-wrapper');
-    if (!chartDiv) {
-      alert('차트가 아직 로딩되지 않았습니다. 잠시 후 다시 시도해주세요.');
-      return;
-    }
-
-    const canvas = await html2canvas(chartDiv, { backgroundColor: '#ffffff' });
-    const chartImage = canvas.toDataURL('image/png');
-
+  const handleDownload = (lang = 'ko') => {
     const doc = new jsPDF();
 
+    // ✅ 폰트 등록 및 설정
     doc.addFileToVFS('NanumGothic.ttf', NanumGothic);
     doc.addFont('NanumGothic.ttf', 'NanumGothic', 'normal');
     doc.setFont('NanumGothic');
@@ -47,12 +38,6 @@ export default function PdfExport({ summary }) {
 
     const tableY = doc.lastAutoTable.finalY || 50;
 
-    if (chartImage) {
-      doc.setFontSize(12);
-      doc.text(t('📈 Profit Graph', '📈 수익 그래프'), 14, tableY + 12);
-      doc.addImage(chartImage, 'PNG', 14, tableY + 18, 180, 80);
-    }
-
     doc.setFontSize(10);
     doc.text(
       t(
@@ -60,10 +45,14 @@ export default function PdfExport({ summary }) {
         '※ 본 보고서는 참고용이며, 실제 수익과 차이가 발생할 수 있으며 법적 효력이 없습니다.'
       ),
       14,
-      chartImage ? tableY + 105 : tableY + 25
+      tableY + 20
     );
 
-    doc.text(t('Company: Dabin ENC | www.dabinenc.com', '회사: 다빈이앤씨 | www.dabinenc.com'), 14, 285);
+    doc.text(
+      t('Company: Dabin ENC | www.dabinenc.com', '회사: 다빈이앤씨 | www.dabinenc.com'),
+      14,
+      285
+    );
 
     doc.save(isKo ? '태양광_수익성_보고서.pdf' : 'solar_profitability_report.pdf');
   };
