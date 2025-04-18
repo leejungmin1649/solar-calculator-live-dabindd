@@ -6,7 +6,7 @@ export default function ExcelExport({ summary, chartData }) {
   const handleExport = () => {
     const wb = XLSX.utils.book_new();
 
-    // 1. 결과 요약 시트
+    // 1. 수익 요약 시트
     const summarySheetData = [
       ['항목', '값'],
       ['예상 발전량', `${summary?.yearlyGen?.toLocaleString()} kWh`],
@@ -22,10 +22,11 @@ export default function ExcelExport({ summary, chartData }) {
 
     // 2. 연간 수익 데이터 시트
     if (chartData?.length > 0) {
-      const dataSheet = XLSX.utils.json_to_sheet(chartData);
-      XLSX.utils.book_append_sheet(wb, dataSheet, '연간 수익 데이터');
+      const chartSheet = XLSX.utils.json_to_sheet(chartData);
+      XLSX.utils.book_append_sheet(wb, chartSheet, '연간 수익 데이터');
     }
 
+    // 3. 파일 다운로드
     XLSX.writeFile(wb, '태양광_수익성_계산_결과.xlsx');
   };
 
