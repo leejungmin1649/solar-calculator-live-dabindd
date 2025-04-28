@@ -15,6 +15,7 @@ export default function ExcelExport({ summary, chartData }) {
       ['연간 원리금 상환', `${summary?.yearlyRepayment?.toLocaleString()} KRW`],
       ['순수익', `${summary?.netProfit?.toLocaleString()} KRW`],
       ['자기자본 수익률', `${summary?.roi}%`],
+      ['대출금 수익률', `${summary?.loanRoi}%`],   // ⭐ 추가된 부분
       ['회수기간', typeof summary?.payback === 'number' ? `${summary?.payback} 년` : '-']
     ];
     const summarySheet = XLSX.utils.aoa_to_sheet(summarySheetData);
