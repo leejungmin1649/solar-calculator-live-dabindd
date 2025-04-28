@@ -12,7 +12,7 @@ export default function CalculatorForm({ onDataChange }) {
     loan: '150,000,000',
     interest: '5.8',
     term: '10',
-    deferPeriod: '0' // ⭐ 거치기간 (년) 추가
+    deferPeriod: '0' // ⭐ 거치기간 (년)
   });
 
   const formatNumber = (value) => {
@@ -41,13 +41,13 @@ export default function CalculatorForm({ onDataChange }) {
     const loan = parseNumber(form.loan);
     const interest = parseNumber(form.interest);
     const term = parseNumber(form.term);
-    const deferPeriod = parseNumber(form.deferPeriod); // ⭐ 거치기간
+    const deferPeriod = parseNumber(form.deferPeriod);
 
     const yearlyGen = capacity * 365 * hours;
     const revenue = yearlyGen * (smp + rec * weight);
     const monthlyRate = interest / 100 / 12;
-    const nper = (term - deferPeriod) * 12; // ⭐ 거치기간 제외한 실제 원리금상환 개월수
-    const pmt = nper > 0 ? (monthlyRate * loan) / (1 - Math.pow(1 + monthlyRate, -nper)) : 0; // PMT 공식
+    const nper = (term - deferPeriod) * 12; // 거치 제외 상환개월
+    const pmt = nper > 0 ? (monthlyRate * loan) / (1 - Math.pow(1 + monthlyRate, -nper)) : 0;
 
     let data = [];
     let cumulativeProfit = 0;
@@ -57,10 +57,10 @@ export default function CalculatorForm({ onDataChange }) {
       let yearlyRepayment;
 
       if (i < deferPeriod) {
-        // ⭐ 거치기간: 이자만 납부
+        // 거치기간: 이자만 납부
         yearlyRepayment = loan * (interest / 100);
       } else {
-        // ⭐ 원리금 균등상환
+        // 상환기간: 원리금 균등상환
         yearlyRepayment = pmt * 12;
       }
 
@@ -78,6 +78,7 @@ export default function CalculatorForm({ onDataChange }) {
         year: i + 1,
         netProfit,
         cumulativeProfit,
+        yearlyRepayment: Math.round(yearlyRepayment) // ⭐ 연간 상환금 기록
       });
     }
 
@@ -103,6 +104,7 @@ export default function CalculatorForm({ onDataChange }) {
       payback,
       roi,
       loanRoi,
+      equity, // ⭐ 추가! (Home.jsx에서 구분할 수 있게)
     };
 
     onDataChange(data, breakEvenYear, summary);
@@ -121,7 +123,7 @@ export default function CalculatorForm({ onDataChange }) {
         ['loan', '대출금액 (원)'],
         ['interest', '이자율 (%)'],
         ['term', '상환기간 (년)'],
-        ['deferPeriod', '거치기간 (년)'], // ⭐ 입력란 추가
+        ['deferPeriod', '거치기간 (년)'], // ⭐ 입력란
       ].map(([name, label]) => (
         <div key={name}>
           <label className="block mb-1 font-medium text-sm">{label}</label>
