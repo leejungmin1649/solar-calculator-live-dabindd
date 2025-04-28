@@ -41,15 +41,16 @@ export default function CalculatorForm({ onDataChange }) {
     const interest = parseNumber(form.interest);
     const term = parseNumber(form.term);
 
-    const yearlyGen = capacity * 365 * hours;
-    const revenue = yearlyGen * (smp + rec * weight);
+    const yearlyGen = capacity * 365 * hours; // 예상 발전량 (kWh)
+    const revenue = yearlyGen * (smp + rec * weight); // 총 수익
     const monthlyRate = interest / 100 / 12;
     const nper = term * 12;
     const pmt = loan > 0 ? (monthlyRate * loan) / (1 - Math.pow(1 + monthlyRate, -nper)) : 0;
     const yearlyRepayment = loan > 0 ? Math.round(pmt * 12) : 0;
-    const netProfit = revenue - operationCost - yearlyRepayment;
-    const roi = equity > 0 ? ((netProfit / equity) * 100).toFixed(1) : '-';
-    const payback = netProfit > 0 ? Math.ceil(equity / netProfit) : '-';
+    const netProfit = revenue - operationCost - yearlyRepayment; // 순수익
+    const roi = equity > 0 ? ((netProfit / equity) * 100).toFixed(1) : '-'; // 자기자본 수익률
+    const loanRoi = loan > 0 && netProfit > 0 ? ((netProfit / loan) * 100).toFixed(1) : '0.0'; // 대출금 수익률 추가
+    const payback = netProfit > 0 ? Math.ceil(equity / netProfit) : '-'; // 회수기간
 
     const data = Array.from({ length: term }, (_, i) => ({
       year: i + 1,
@@ -66,7 +67,8 @@ export default function CalculatorForm({ onDataChange }) {
       yearlyRepayment,
       netProfit,
       payback,
-      roi
+      roi,
+      loanRoi, // <<< 이 부분이 추가되어야 Home.jsx에서도 표시됩니다
     };
 
     onDataChange(data, breakEvenYear, summary);
