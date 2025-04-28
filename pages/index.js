@@ -51,13 +51,19 @@ export default function Home() {
           <>
             <div className="mt-10 space-y-1 text-sm text-white bg-gray-700 p-4 rounded-lg shadow">
               <h2 className="text-lg font-semibold text-emerald-400 mb-2">📊 결과 요약</h2>
+
               <div>📌 예상 발전량: {summary.yearlyGen.toLocaleString()} kWh</div>
               <div>💰 총 수익: {summary.revenue.toLocaleString()} 원</div>
               <div>🧰 운영비: {summary.operationCost.toLocaleString()} 원</div>
               <div>🏦 연간 원리금 상환: {summary.yearlyRepayment.toLocaleString()} 원</div>
-              <div>📈 순수익: {Math.round(summary.netProfit).toLocaleString()} 원</div> {/* ⭐ 소수점 반올림 */}
-              <div>📊 자기자본 수익률: {summary.roi !== '-' ? `${Math.round(summary.roi)}%` : '-'}</div> {/* ⭐ 정수표시 */}
-              <div>📊 대출금 수익률: {summary.loanRoi !== '-' ? `${Math.round(summary.loanRoi)}%` : '-'}</div> {/* ⭐ 정수표시 */}
+              <div>📈 순수익: {Math.round(summary.netProfit).toLocaleString()} 원</div>
+
+              {summary.equity > 0 ? (
+                <div>📊 자기자본 수익률: {summary.roi !== '-' ? `${Math.round(summary.roi)}%` : '-'}</div>
+              ) : (
+                <div>📊 대출금 수익률: {summary.loanRoi !== '-' ? `${Math.round(summary.loanRoi)}%` : '-'}</div>
+              )}
+
               <div>⏱️ 회수기간: {typeof summary.payback === 'number' ? `${summary.payback} 년` : '-'}</div>
             </div>
 
