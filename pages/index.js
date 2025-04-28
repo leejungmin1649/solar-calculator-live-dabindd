@@ -57,6 +57,7 @@ export default function Home() {
               <div>🏦 연간 원리금 상환: {summary.yearlyRepayment.toLocaleString()} 원</div>
               <div>📈 순수익: {summary.netProfit.toLocaleString()} 원</div>
               <div>📊 자기자본 수익률: {summary.roi}%</div>
+              <div>📊 대출금 수익률: {summary.loanRoi}%</div> {/* 추가된 부분 */}
               <div>⏱️ 회수기간: {typeof summary.payback === 'number' ? `${summary.payback} 년` : '-'}</div>
             </div>
 
@@ -73,6 +74,7 @@ export default function Home() {
             <li>💸 총 수익은 SMP + REC 기준 수익을 반영합니다.</li>
             <li>🛠️ 순수익은 운영비용, 대출 원리금 상환을 제외한 실제 수익입니다.</li>
             <li>📊 자기자본 수익률은 연간 순수익 ÷ 자기자본 × 100 입니다.</li>
+            <li>📊 대출금 수익률은 연간 순수익 ÷ 대출금 × 100 입니다.</li> {/* 안내 추가 */}
             <li>⏱️ 회수기간은 투자금 회수까지 예상되는 연도 수입니다.</li>
           </ul>
           <p className="mt-3 text-xs text-gray-500">
