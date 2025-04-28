@@ -11,7 +11,8 @@ export default function CalculatorForm({ onDataChange }) {
     equity: '80,000,000',
     loan: '150,000,000',
     interest: '5.8',
-    term: '10'
+    term: '10',
+    deferPeriod: '0' // ⭐ 거치기간 (년) 추가
   });
 
   const formatNumber = (value) => {
@@ -40,35 +41,68 @@ export default function CalculatorForm({ onDataChange }) {
     const loan = parseNumber(form.loan);
     const interest = parseNumber(form.interest);
     const term = parseNumber(form.term);
+    const deferPeriod = parseNumber(form.deferPeriod); // ⭐ 거치기간
 
-    const yearlyGen = capacity * 365 * hours; // 예상 발전량 (kWh)
-    const revenue = yearlyGen * (smp + rec * weight); // 총 수익
+    const yearlyGen = capacity * 365 * hours;
+    const revenue = yearlyGen * (smp + rec * weight);
     const monthlyRate = interest / 100 / 12;
-    const nper = term * 12;
-    const pmt = loan > 0 ? (monthlyRate * loan) / (1 - Math.pow(1 + monthlyRate, -nper)) : 0;
-    const yearlyRepayment = loan > 0 ? Math.round(pmt * 12) : 0;
-    const netProfit = revenue - operationCost - yearlyRepayment; // 순수익
-    const roi = equity > 0 ? ((netProfit / equity) * 100).toFixed(1) : '-'; // 자기자본 수익률
-    const loanRoi = loan > 0 && netProfit > 0 ? ((netProfit / loan) * 100).toFixed(1) : '0.0'; // 대출금 수익률 추가
-    const payback = netProfit > 0 ? Math.ceil(equity / netProfit) : '-'; // 회수기간
+    const nper = (term - deferPeriod) * 12; // ⭐ 거치기간 제외한 실제 원리금상환 개월수
+    const pmt = nper > 0 ? (monthlyRate * loan) / (1 - Math.pow(1 + monthlyRate, -nper)) : 0; // PMT 공식
 
-    const data = Array.from({ length: term }, (_, i) => ({
-      year: i + 1,
-      netProfit,
-      cumulativeProfit: netProfit * (i + 1),
-    }));
+    let data = [];
+    let cumulativeProfit = 0;
+    let breakEvenYear = null;
 
-    const breakEvenYear = data.find(d => d.cumulativeProfit >= equity)?.year ?? null;
+    for (let i = 0; i < term; i++) {
+      let yearlyRepayment;
+
+      if (i < deferPeriod) {
+        // ⭐ 거치기간: 이자만 납부
+        yearlyRepayment = loan * (interest / 100);
+      } else {
+        // ⭐ 원리금 균등상환
+        yearlyRepayment = pmt * 12;
+      }
+
+      const netProfit = revenue - operationCost - yearlyRepayment;
+      cumulativeProfit += netProfit;
+
+      if (!breakEvenYear) {
+        const target = equity > 0 ? equity : loan;
+        if (cumulativeProfit >= target) {
+          breakEvenYear = i + 1;
+        }
+      }
+
+      data.push({
+        year: i + 1,
+        netProfit,
+        cumulativeProfit,
+      });
+    }
+
+    const lastYear = data[data.length - 1];
+    const finalNetProfit = lastYear ? lastYear.netProfit : 0;
+
+    const roi = equity > 0 && finalNetProfit > 0 ? ((finalNetProfit / equity) * 100).toFixed(1) : '-';
+    const loanRoi = loan > 0 && finalNetProfit > 0 ? ((finalNetProfit / loan) * 100).toFixed(1) : '0.0';
+    const payback = finalNetProfit > 0
+      ? (equity > 0
+          ? Math.ceil(equity / finalNetProfit)
+          : loan > 0
+            ? Math.ceil(loan / finalNetProfit)
+            : '-')
+      : '-';
 
     const summary = {
       yearlyGen,
       revenue,
       operationCost,
-      yearlyRepayment,
-      netProfit,
+      yearlyRepayment: Math.round(pmt * 12),
+      netProfit: finalNetProfit,
       payback,
       roi,
-      loanRoi, // <<< 이 부분이 추가되어야 Home.jsx에서도 표시됩니다
+      loanRoi,
     };
 
     onDataChange(data, breakEvenYear, summary);
@@ -87,6 +121,7 @@ export default function CalculatorForm({ onDataChange }) {
         ['loan', '대출금액 (원)'],
         ['interest', '이자율 (%)'],
         ['term', '상환기간 (년)'],
+        ['deferPeriod', '거치기간 (년)'], // ⭐ 입력란 추가
       ].map(([name, label]) => (
         <div key={name}>
           <label className="block mb-1 font-medium text-sm">{label}</label>
