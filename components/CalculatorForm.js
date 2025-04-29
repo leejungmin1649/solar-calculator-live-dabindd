@@ -12,7 +12,7 @@ export default function CalculatorForm({ onDataChange }) {
     loan: '150,000,000',
     interest: '5.8',
     term: '10',
-    deferPeriod: '0' // ⭐ 거치기간 (년)
+    deferPeriod: '0'
   });
 
   const formatNumber = (value) => {
@@ -46,7 +46,7 @@ export default function CalculatorForm({ onDataChange }) {
     const yearlyGen = capacity * 365 * hours;
     const revenue = yearlyGen * (smp + rec * weight);
     const monthlyRate = interest / 100 / 12;
-    const nper = (term - deferPeriod) * 12; // 거치 제외 상환개월
+    const nper = (term - deferPeriod) * 12;
     const pmt = nper > 0 ? (monthlyRate * loan) / (1 - Math.pow(1 + monthlyRate, -nper)) : 0;
 
     let data = [];
@@ -54,15 +54,9 @@ export default function CalculatorForm({ onDataChange }) {
     let breakEvenYear = null;
 
     for (let i = 0; i < term; i++) {
-      let yearlyRepayment;
-
-      if (i < deferPeriod) {
-        // 거치기간: 이자만 납부
-        yearlyRepayment = loan * (interest / 100);
-      } else {
-        // 상환기간: 원리금 균등상환
-        yearlyRepayment = pmt * 12;
-      }
+      let yearlyRepayment = i < deferPeriod
+        ? loan * (interest / 100)
+        : pmt * 12;
 
       const netProfit = revenue - operationCost - yearlyRepayment;
       cumulativeProfit += netProfit;
@@ -78,7 +72,7 @@ export default function CalculatorForm({ onDataChange }) {
         year: i + 1,
         netProfit,
         cumulativeProfit,
-        yearlyRepayment: Math.round(yearlyRepayment) // ⭐ 연간 상환금 기록
+        yearlyRepayment: Math.round(yearlyRepayment),
       });
     }
 
@@ -88,11 +82,9 @@ export default function CalculatorForm({ onDataChange }) {
     const roi = equity > 0 && finalNetProfit > 0 ? ((finalNetProfit / equity) * 100).toFixed(1) : '-';
     const loanRoi = loan > 0 && finalNetProfit > 0 ? ((finalNetProfit / loan) * 100).toFixed(1) : '0.0';
     const payback = finalNetProfit > 0
-      ? (equity > 0
-          ? Math.ceil(equity / finalNetProfit)
-          : loan > 0
-            ? Math.ceil(loan / finalNetProfit)
-            : '-')
+      ? (equity > 0 ? Math.ceil(equity / finalNetProfit)
+          : loan > 0 ? Math.ceil(loan / finalNetProfit)
+          : '-')
       : '-';
 
     const summary = {
@@ -104,7 +96,8 @@ export default function CalculatorForm({ onDataChange }) {
       payback,
       roi,
       loanRoi,
-      equity, // ⭐ 추가! (Home.jsx에서 구분할 수 있게)
+      equity,
+      loan, // ⭐ loan 추가!
     };
 
     onDataChange(data, breakEvenYear, summary);
@@ -123,7 +116,7 @@ export default function CalculatorForm({ onDataChange }) {
         ['loan', '대출금액 (원)'],
         ['interest', '이자율 (%)'],
         ['term', '상환기간 (년)'],
-        ['deferPeriod', '거치기간 (년)'], // ⭐ 입력란
+        ['deferPeriod', '거치기간 (년)'],
       ].map(([name, label]) => (
         <div key={name}>
           <label className="block mb-1 font-medium text-sm">{label}</label>
