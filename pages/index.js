@@ -58,11 +58,11 @@ export default function Home() {
               <div>🏦 연간 원리금 상환: {summary.yearlyRepayment.toLocaleString()} 원</div>
               <div>📈 순수익: {Math.round(summary.netProfit).toLocaleString()} 원</div>
 
-              {summary.equity > 0 && (
+              {Number(summary.equity) > 0 && (
                 <div>📊 자기자본 수익률: {summary.roi !== '-' ? `${Math.round(summary.roi)}%` : '-'}</div>
               )}
 
-              {summary.loan > 0 && summary.equity <= 0 && (
+              {Number(summary.loan) > 0 && Number(summary.equity) <= 0 && (
                 <div>📊 대출금 수익률: {summary.loanRoi !== '-' ? `${Math.round(summary.loanRoi)}%` : '-'}</div>
               )}
 
