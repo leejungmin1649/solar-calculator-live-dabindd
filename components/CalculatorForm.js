@@ -15,6 +15,19 @@ export default function CalculatorForm({ onDataChange }) {
     deferPeriod: '0'
   });
 
+  // ✅ 1. 최초 마운트 시 localStorage에서 불러오기
+  useEffect(() => {
+    const saved = localStorage.getItem('solarCalcForm');
+    if (saved) {
+      setForm(JSON.parse(saved));
+    }
+  }, []);
+
+  // ✅ 2. form 값이 바뀔 때 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('solarCalcForm', JSON.stringify(form));
+  }, [form]);
+
   const formatNumber = (value) => {
     const number = value.toString().replace(/,/g, '');
     if (isNaN(Number(number))) return '';
@@ -97,7 +110,7 @@ export default function CalculatorForm({ onDataChange }) {
       roi,
       loanRoi,
       equity,
-      loan, // ⭐ loan 추가!
+      loan,
     };
 
     onDataChange(data, breakEvenYear, summary);
