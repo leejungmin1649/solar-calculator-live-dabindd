@@ -24,6 +24,9 @@ export default function Home() {
           ☀️ 태양광 수익성 계산기
         </h1>
         <p className="text-gray-400 mt-1 text-sm">실시간 수익 분석 & Excel 보고서 제공</p>
+        <p className="text-gray-300 mt-1 text-sm">
+          📞 <a href="tel:0424841108" className="underline hover:text-emerald-400">042-484-1108</a> (태양광 투자, 공사, 금융, RE100 문의)
+        </p>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-10">
