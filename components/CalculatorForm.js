@@ -1,13 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function CalculatorForm({
-  onDataChange,
-  projectName, setProjectName,
-  date, setDate,
-  contractAmount, setContractAmount,
-  contractCapacity, setContractCapacity,
-  rows, setRows
-}) {
+export default function CalculatorForm({ onDataChange }) {
   const [form, setForm] = useState({
     capacity: '100',
     hours: '3.5',
@@ -22,7 +15,7 @@ export default function CalculatorForm({
     deferPeriod: '0'
   });
 
-  // localStorage 복원
+  // ✅ 1. 최초 마운트 시 localStorage에서 불러오기
   useEffect(() => {
     const saved = localStorage.getItem('solarCalcForm');
     if (saved) {
@@ -30,6 +23,7 @@ export default function CalculatorForm({
     }
   }, []);
 
+  // ✅ 2. form 값이 바뀔 때 localStorage에 저장
   useEffect(() => {
     localStorage.setItem('solarCalcForm', JSON.stringify(form));
   }, [form]);
@@ -42,7 +36,6 @@ export default function CalculatorForm({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     const isCurrencyField = ['equity', 'loan', 'operationCost'].includes(name);
     const formatted = isCurrencyField ? formatNumber(value) : value;
     setForm({ ...form, [name]: formatted });
@@ -124,71 +117,30 @@ export default function CalculatorForm({
   }, [form]);
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {[
-          ['capacity', '설치용량 (kW)'],
-          ['hours', '일일 발전시간 (h)'],
-          ['smp', 'SMP 단가 (원/kWh)'],
-          ['rec', 'REC 단가 (원/kWh)'],
-          ['weight', 'REC 가중치'],
-          ['operationCost', '운영비용 (원)'],
-          ['equity', '자기자본 (원)'],
-          ['loan', '대출금액 (원)'],
-          ['interest', '이자율 (%)'],
-          ['term', '상환기간 (년)'],
-          ['deferPeriod', '거치기간 (년)'],
-        ].map(([name, label]) => (
-          <div key={name}>
-            <label className="block mb-1 font-medium text-sm">{label}</label>
-            <input
-              name={name}
-              value={form[name]}
-              onChange={handleChange}
-              className="w-full h-11 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block mb-1 font-medium text-sm">공사명</label>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {[
+        ['capacity', '설치용량 (kW)'],
+        ['hours', '일일 발전시간 (h)'],
+        ['smp', 'SMP 단가 (원/kWh)'],
+        ['rec', 'REC 단가 (원/kWh)'],
+        ['weight', 'REC 가중치'],
+        ['operationCost', '운영비용 (원)'],
+        ['equity', '자기자본 (원)'],
+        ['loan', '대출금액 (원)'],
+        ['interest', '이자율 (%)'],
+        ['term', '상환기간 (년)'],
+        ['deferPeriod', '거치기간 (년)'],
+      ].map(([name, label]) => (
+        <div key={name}>
+          <label className="block mb-1 font-medium text-sm">{label}</label>
           <input
-            value={projectName}
-            onChange={(e) => setProjectName(e.target.value)}
-            className="w-full h-11 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-700 rounded-md shadow-sm"
+            name={name}
+            value={form[name]}
+            onChange={handleChange}
+            className="w-full h-11 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
-        <div>
-          <label className="block mb-1 font-medium text-sm">작성일</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full h-11 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-700 rounded-md shadow-sm"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block mb-1 font-medium text-sm">계약금액</label>
-          <input
-            value={contractAmount}
-            onChange={(e) => setContractAmount(e.target.value)}
-            className="w-full h-11 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-700 rounded-md shadow-sm"
-          />
-        </div>
-        <div>
-          <label className="block mb-1 font-medium text-sm">계약용량</label>
-          <input
-            value={contractCapacity}
-            onChange={(e) => setContractCapacity(e.target.value)}
-            className="w-full h-11 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-700 rounded-md shadow-sm"
-          />
-        </div>
-      </div>
+      ))}
     </div>
   );
 }
