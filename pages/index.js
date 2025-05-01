@@ -6,6 +6,7 @@ import ProfitChart from '../components/ProfitChart';
 import ExcelExport from '../components/ExcelExport';
 import ThemeToggle from '../components/ThemeToggle';
 import ShareButton from '../components/ShareButton';
+import { decompressFromEncodedURIComponent } from 'lz-string';
 
 export default function Home() {
   const [chartData, setChartData] = useState([]);
@@ -19,10 +20,10 @@ export default function Home() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const data = urlParams.get('data');
-    if (data) {
+    const raw = urlParams.get('data');
+    if (raw) {
       try {
-        const decoded = JSON.parse(decodeURIComponent(data));
+        const decoded = JSON.parse(decompressFromEncodedURIComponent(raw));
         setProjectName(decoded.projectName || '');
         setDate(decoded.date || '');
         setContractAmount(decoded.contractAmount || '');
