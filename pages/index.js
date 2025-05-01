@@ -1,14 +1,39 @@
+// pages/index.js
 import Head from 'next/head';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CalculatorForm from '../components/CalculatorForm';
 import ProfitChart from '../components/ProfitChart';
 import ExcelExport from '../components/ExcelExport';
 import ThemeToggle from '../components/ThemeToggle';
+import ShareButton from '../components/ShareButton';
 
 export default function Home() {
   const [chartData, setChartData] = useState([]);
   const [breakEvenYear, setBreakEvenYear] = useState(null);
   const [summary, setSummary] = useState(null);
+
+  const [projectName, setProjectName] = useState('');
+  const [date, setDate] = useState('');
+  const [contractAmount, setContractAmount] = useState('');
+  const [contractCapacity, setContractCapacity] = useState('');
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const data = urlParams.get('data');
+    if (data) {
+      try {
+        const decoded = JSON.parse(decodeURIComponent(data));
+        setProjectName(decoded.projectName || '');
+        setDate(decoded.date || '');
+        setContractAmount(decoded.contractAmount || '');
+        setContractCapacity(decoded.contractCapacity || '');
+        setSummary(decoded.summary || null);
+        setChartData(decoded.chartData || []);
+      } catch (err) {
+        console.error('복원 오류:', err);
+      }
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
@@ -39,6 +64,12 @@ export default function Home() {
               setChartData(data);
               setBreakEvenYear(year);
               setSummary(summaryData);
+            }}
+            onMetaChange={(meta) => {
+              setProjectName(meta.projectName);
+              setDate(meta.date);
+              setContractAmount(meta.contractAmount);
+              setContractCapacity(meta.contractCapacity);
             }}
           />
         </div>
@@ -74,6 +105,14 @@ export default function Home() {
 
             <div className="mt-6 text-center">
               <ExcelExport summary={summary} chartData={chartData} />
+              <ShareButton
+                summary={summary}
+                chartData={chartData}
+                projectName={projectName}
+                date={date}
+                contractAmount={contractAmount}
+                contractCapacity={contractCapacity}
+              />
             </div>
           </>
         )}
