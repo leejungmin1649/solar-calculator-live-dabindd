@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { compressToEncodedURIComponent } from 'lz-string';
 
 export default function ShareButton({ summary, chartData, projectName, date, contractAmount, contractCapacity }) {
   const [shareUrl, setShareUrl] = useState('');
@@ -6,15 +7,16 @@ export default function ShareButton({ summary, chartData, projectName, date, con
   useEffect(() => {
     if (!summary) return;
 
-    const encoded = encodeURIComponent(JSON.stringify({
+    const data = {
       summary,
       chartData,
       projectName,
       date,
       contractAmount,
       contractCapacity,
-    }));
+    };
 
+    const encoded = compressToEncodedURIComponent(JSON.stringify(data));
     const base = typeof window !== 'undefined' ? window.location.origin : '';
     const url = `${base}?data=${encoded}`;
     setShareUrl(url);
