@@ -13,7 +13,8 @@
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.28",
     "recharts": "^2.7.2",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "lz-string": "^1.4.4"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.1",
