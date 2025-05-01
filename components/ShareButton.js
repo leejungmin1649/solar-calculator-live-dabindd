@@ -23,7 +23,7 @@ export default function ShareButton({ summary, chartData, projectName, date, con
   const copyToClipboard = () => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(shareUrl).then(() => {
-        alert('🔗 링크가 복사되었습니다!');
+        alert('🔗 결과 URL이 복사되었습니다!');
       });
     }
   };
@@ -36,9 +36,6 @@ export default function ShareButton({ summary, chartData, projectName, date, con
       >
         🔗 결과 URL 복사하기
       </button>
-      {shareUrl && (
-        <div className="mt-2 text-xs text-gray-400 break-all">{shareUrl}</div>
-      )}
     </div>
   );
 }
