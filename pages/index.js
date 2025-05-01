@@ -62,14 +62,14 @@ export default function Home() {
               <div>📈 순수익: {Math.round(summary.netProfit).toLocaleString()} 원</div>
 
               {Number(summary.equity) > 0 && (
-                <div>📊 자기자본 수익률: {summary.roi !== '-' ? `${Math.round(summary.roi)}%` : '-'}</div>
+                <div>📊 자기자본 수익률: {summary.roi !== '-' ? ${Math.round(summary.roi)}% : '-'}</div>
               )}
 
               {Number(summary.loan) > 0 && Number(summary.equity) <= 0 && (
-                <div>📊 대출금 수익률: {summary.loanRoi !== '-' ? `${Math.round(summary.loanRoi)}%` : '-'}</div>
+                <div>📊 대출금 수익률: {summary.loanRoi !== '-' ? ${Math.round(summary.loanRoi)}% : '-'}</div>
               )}
 
-              <div>⏱️ 회수기간: {typeof summary.payback === 'number' ? `${summary.payback} 년` : '-'}</div>
+              <div>⏱️ 회수기간: {typeof summary.payback === 'number' ? ${summary.payback} 년 : '-'}</div>
             </div>
 
             <div className="mt-6 text-center">
