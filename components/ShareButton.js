@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { compressToEncodedURIComponent } from 'lz-string';
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 import PropTypes from 'prop-types';
 
 export default function ShareButton({
@@ -13,7 +13,7 @@ export default function ShareButton({
   const [shareUrl, setShareUrl] = useState('');
   const kakaoBtnRef = useRef(null);
 
-  // 1) URL 압축·인코딩
+  // URL 압축·인코딩
   useEffect(() => {
     if (!summary) return;
     const payload = { summary, chartData, projectName, date, contractAmount, contractCapacity };
@@ -21,24 +21,42 @@ export default function ShareButton({
     setShareUrl(`${window.location.origin}?data=${encoded}`);
   }, [summary, chartData, projectName, date, contractAmount, contractCapacity]);
 
-  // 2) 카카오톡 공유 핸들러 (모바일·데스크톱)
-  const handleKakaoShare = () => {
-    if (!window.Kakao || !window.Kakao.isInitialized()) return;
-    window.Kakao.Link.sendDefault({
-      objectType: 'feed',
-      content: {
-        title: projectName || '태양광 수익성 결과',
-        description: `총 수익: ${summary.revenue.toLocaleString()}원\n순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
-        imageUrl: `${window.location.origin}/logo-dabin.png`,
-        link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
-      },
-      buttons: [
-        { title: '결과 확인하기', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } },
-      ],
-    });
-  };
+  // 카카오 SDK 초기화
+  useEffect(() => {
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init('f5b4cfb16c5b2f8e213a1549a009307a');
+    }
+  }, []);
 
-  // 3) 클립보드 복사
+  // 모바일 카카오 공유 버튼 바인딩
+  useEffect(() => {
+    if (window.Kakao && kakaoBtnRef.current && shareUrl) {
+      window.Kakao.Link.createDefaultButton({
+        container: kakaoBtnRef.current,
+        objectType: 'feed',
+        content: {
+          title: projectName || '태양광 수익성 결과',
+          description: `총 수익: ${summary.revenue.toLocaleString()}원\n순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
+          imageUrl: `${window.location.origin}/logo-dabin.png`,
+          link: {
+            mobileWebUrl: shareUrl,
+            webUrl: shareUrl,
+          },
+        },
+        buttons: [
+          {
+            title: '결과 확인하기',
+            link: {
+              mobileWebUrl: shareUrl,
+              webUrl: shareUrl,
+            },
+          },
+        ],
+      });
+    }
+  }, [shareUrl, projectName, summary]);
+
+  // 클립보드 복사
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
@@ -48,7 +66,7 @@ export default function ShareButton({
     }
   };
 
-  // 4) Web Share API (데스크톱 + 모바일)
+  // Web Share API (모바일 대응)
   const handleWebShare = async () => {
     if (navigator.share) {
       try {
@@ -69,7 +87,6 @@ export default function ShareButton({
 
   return (
     <div className="mt-4 flex justify-center space-x-2">
-      {/* URL 복사 */}
       <button
         onClick={copyToClipboard}
         className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-full shadow"
@@ -77,7 +94,6 @@ export default function ShareButton({
         🔗 URL 복사
       </button>
 
-      {/* Web Share (데스크톱 + 모바일) */}
       <button
         onClick={handleWebShare}
         className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow"
@@ -85,9 +101,8 @@ export default function ShareButton({
         📤 공유하기
       </button>
 
-      {/* 카카오톡 공유 */}
       <button
-        onClick={handleKakaoShare}
+        ref={kakaoBtnRef}
         disabled={!shareUrl}
         className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-full shadow disabled:opacity-50"
       >
