@@ -12,7 +12,7 @@ export default function ShareButton({
   contractCapacity,
 }) {
   const [shareUrl, setShareUrl] = useState('');
-  const btnRef = useRef(null);
+  const kakaoBtnRef = useRef(null);
 
   // 1) URL 압축·인코딩
   useEffect(() => {
@@ -22,41 +22,53 @@ export default function ShareButton({
     setShareUrl(`${window.location.origin}?data=${encoded}`);
   }, [summary, chartData, projectName, date, contractAmount, contractCapacity]);
 
-  // 2) SDK 바인딩 및 로그
+  // 2) 카카오톡 버튼 바인딩 (모바일)
   useEffect(() => {
-    console.log('ShareButton init:', { shareUrl, kakaoReady: !!window.Kakao && window.Kakao.isInitialized() });
-    if (!btnRef.current || !window.Kakao || !window.Kakao.isInitialized() || !shareUrl) return;
-    window.Kakao.Link.createDefaultButton({
-      container: btnRef.current,
-      objectType: 'feed',
-      content: {
-        title: projectName || '태양광 수익성 결과',
-        description: [
-          `📌 예상 발전량: ${summary.yearlyGen.toLocaleString()} kWh`,
-          `💰 총 수익: ${summary.revenue.toLocaleString()}원`,
-          `🛠️ 운영비: ${summary.operationCost.toLocaleString()}원`,
-          `🏦 원리금 상환: ${summary.yearlyRepayment.toLocaleString()}원`,
-          `📈 순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
-          summary.roi !== '-' ? `📊 ROI: ${Math.round(summary.roi)}%` : null,
-          `⏱️ 회수기간: ${summary.payback}년`,
-        ]
-          .filter(Boolean)
-          .join('\n'),
-        imageUrl: `${window.location.origin}/logo-dabin.png`,
-        link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
-      },
-      buttons: [{ title: '결과 확인하기', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } }],
-      installTalk: true,
-    });
-  }, [shareUrl]);
+    if (
+      kakaoBtnRef.current &&
+      window.Kakao &&
+      window.Kakao.isInitialized() &&
+      shareUrl
+    ) {
+      window.Kakao.Link.createDefaultButton({
+        container: kakaoBtnRef.current,
+        objectType: 'feed',
+        content: {
+          title: projectName || '태양광 수익성 결과',
+          description: `총 수익: ${summary.revenue.toLocaleString()}원\n순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
+          imageUrl: `${window.location.origin}/logo-dabin.png`,
+          link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
+        },
+        buttons: [{ title: '결과 확인하기', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } }],
+      });
+    }
+  }, [shareUrl, summary, projectName]);
 
-  // 3) URL 복사
+  // 3) 클립보드 복사
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
-      alert('🔗 URL 복사완료!');
+      alert('🔗 URL 복사 완료!');
     } catch {
       alert('❌ 복사 실패');
+    }
+  };
+
+  // 4) Web Share API (데스크톱 + 모바일)
+  const handleWebShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: projectName || '태양광 수익성 결과',
+          text: `총 수익: ${summary.revenue.toLocaleString()}원, 순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
+          url: shareUrl,
+        });
+      } catch (err) {
+        console.error('Web Share failed:', err);
+      }
+    } else {
+      // Web Share API 미지원 시 클립보드 복사로 대체
+      copyToClipboard();
     }
   };
 
@@ -64,19 +76,28 @@ export default function ShareButton({
 
   return (
     <div className="mt-4 flex justify-center space-x-2">
+      {/* URL 복사 */}
       <button
         onClick={copyToClipboard}
-        disabled={!shareUrl}
-        className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-full shadow disabled:opacity-50"
+        className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-full shadow"
       >
-        🔗 URL 복사하기
+        🔗 URL 복사
       </button>
+
+      {/* Web Share (데스크톱 또는 모바일 모두 가능) */}
       <button
-        ref={btnRef}
-        disabled={!shareUrl}
-        className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-full shadow disabled:opacity-50"
+        onClick={handleWebShare}
+        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow"
       >
-        💬 카카오톡 공유
+        📤 공유하기
+      </button>
+
+      {/* 카카오톡 (모바일 전용) */}
+      <button
+        ref={kakaoBtnRef}
+        className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-full shadow"
+      >
+        💬 카카오톡
       </button>
     </div>
   );
