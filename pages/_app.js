@@ -11,8 +11,9 @@ function MyApp({ Component, pageProps }) {
         strategy="afterInteractive"
         onLoad={() => {
           if (window.Kakao && !window.Kakao.isInitialized()) {
-            window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_KEY);
-            console.log('Kakao SDK initialized with key:', process.env.NEXT_PUBLIC_KAKAO_KEY);
+            // 직접 키를 하드코딩
+            window.Kakao.init('f5b4cfb16c5b2f8e213a1549a009307a');
+            console.log('✅ Kakao SDK initialized with key:', 'f5b4cfb16c5b2f8e213a1549a009307a');
           }
         }}
       />
