@@ -19,7 +19,7 @@ export default function ShareButton({ summary, chartData, projectName, date, con
   // 카카오 SDK 초기화(onLoad에서 처리)
   const handleScriptLoad = () => {
     if (window.Kakao && !window.Kakao.isInitialized()) {
-      window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_KEY);
+      window.Kakao.init("f5b4cfb16c5b2f8e213a1549a009307a");
       console.log('Kakao SDK initialized');
     }
     setKakaoReady(true);
