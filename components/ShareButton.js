@@ -14,7 +14,7 @@ export default function ShareButton({
   const [shareUrl, setShareUrl] = useState('');
   const btnRef = useRef(null);
 
-  // 1) 결과 데이터를 URL에 압축·인코딩
+  // 1) URL 압축·인코딩
   useEffect(() => {
     if (!summary) return;
     const payload = { summary, chartData, projectName, date, contractAmount, contractCapacity };
@@ -22,8 +22,9 @@ export default function ShareButton({
     setShareUrl(`${window.location.origin}?data=${encoded}`);
   }, [summary, chartData, projectName, date, contractAmount, contractCapacity]);
 
-  // 2) SDK 초기화(이미 _app.js에서 끝났으므로 바로 createDefaultButton)
+  // 2) SDK 바인딩 및 로그
   useEffect(() => {
+    console.log('ShareButton init:', { shareUrl, kakaoReady: !!window.Kakao && window.Kakao.isInitialized() });
     if (!btnRef.current || !window.Kakao || !window.Kakao.isInitialized() || !shareUrl) return;
     window.Kakao.Link.createDefaultButton({
       container: btnRef.current,
@@ -44,9 +45,7 @@ export default function ShareButton({
         imageUrl: `${window.location.origin}/logo-dabin.png`,
         link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
       },
-      buttons: [
-        { title: '결과 확인하기', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } },
-      ],
+      buttons: [{ title: '결과 확인하기', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } }],
       installTalk: true,
     });
   }, [shareUrl]);
