@@ -1,29 +1,55 @@
 import { useEffect, useState } from 'react';
 import { compressToEncodedURIComponent } from 'lz-string';
+import PropTypes from 'prop-types';
 
 export default function ShareButton({ summary, chartData, projectName, date, contractAmount, contractCapacity }) {
   const [shareUrl, setShareUrl] = useState('');
 
+  // 생성된 결과를 URL로 변환
   useEffect(() => {
     if (!summary) return;
-
-    const data = {
-      summary,
-      chartData,
-      projectName,
-      date,
-      contractAmount,
-      contractCapacity,
-    };
-
+    const data = { summary, chartData, projectName, date, contractAmount, contractCapacity };
     const encoded = compressToEncodedURIComponent(JSON.stringify(data));
     const base = typeof window !== 'undefined' ? window.location.origin : '';
-    const url = `${base}?data=${encoded}`;
-    setShareUrl(url);
+    setShareUrl(`${base}?data=${encoded}`);
   }, [summary, chartData, projectName, date, contractAmount, contractCapacity]);
 
+  // Kakao SDK 초기화
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.Kakao) {
+      const key = process.env.NEXT_PUBLIC_KAKAO_KEY;
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init(key);
+      }
+    }
+  }, []);
+
+  // 카카오톡 공유 핸들러
+  const handleKakaoShare = () => {
+    if (!window.Kakao || !window.Kakao.isInitialized()) {
+      console.error('Kakao SDK 초기화 실패');
+      return;
+    }
+    window.Kakao.Link.sendDefault({
+      objectType: 'feed',
+      content: {
+        title: projectName || '태양광 수익성 결과',
+        description: `총 수익: ${contractAmount}원, 용량: ${contractCapacity}kW`,
+        imageUrl: `${window.location.origin}/logo-dabin.png`,
+        link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
+      },
+      buttons: [
+        {
+          title: '결과 보기',
+          link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
+        },
+      ],
+    });
+  };
+
+  // URL 복사 핸들러
   const copyToClipboard = () => {
-    if (navigator.clipboard) {
+    if (navigator.clipboard && shareUrl) {
       navigator.clipboard.writeText(shareUrl).then(() => {
         alert('🔗 결과 URL이 복사되었습니다!');
       });
@@ -31,13 +57,28 @@ export default function ShareButton({ summary, chartData, projectName, date, con
   };
 
   return (
-    <div className="mt-4 text-center">
+    <div className="mt-4 text-center space-x-2">
       <button
         onClick={copyToClipboard}
         className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-full shadow transition"
       >
-        🔗 결과 URL 복사하기
+        🔗 URL 복사하기
+      </button>
+      <button
+        onClick={handleKakaoShare}
+        className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-full shadow transition"
+      >
+        💬 카카오톡 공유
       </button>
     </div>
   );
 }
+
+ShareButton.propTypes = {
+  summary: PropTypes.object.isRequired,
+  chartData: PropTypes.array.isRequired,
+  projectName: PropTypes.string,
+  date: PropTypes.string,
+  contractAmount: PropTypes.string,
+  contractCapacity: PropTypes.string,
+};
