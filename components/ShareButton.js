@@ -1,31 +1,38 @@
+// components/ShareButton.js
 import { useEffect, useState } from 'react';
 import { compressToEncodedURIComponent } from 'lz-string';
 import PropTypes from 'prop-types';
 
-export default function ShareButton({ summary, chartData, projectName, date, contractAmount, contractCapacity }) {
+export default function ShareButton({
+  summary,
+  chartData,
+  projectName,
+  date,
+  contractAmount,
+  contractCapacity,
+}) {
   const [shareUrl, setShareUrl] = useState('');
 
-  // 결과 데이터를 URL로 인코딩
+  // 결과 데이터를 URL에 압축·인코딩
   useEffect(() => {
     if (!summary) return;
     const data = { summary, chartData, projectName, date, contractAmount, contractCapacity };
     const encoded = compressToEncodedURIComponent(JSON.stringify(data));
-    const base = window.location.origin;
-    setShareUrl(`${base}?data=${encoded}`);
+    setShareUrl(`${window.location.origin}?data=${encoded}`);
   }, [summary, chartData, projectName, date, contractAmount, contractCapacity]);
 
-  // URL 복사 핸들러
+  // URL 복사
   const copyToClipboard = () => {
     if (navigator.clipboard && shareUrl) {
-      navigator.clipboard.writeText(shareUrl)
-        .then(() => alert('🔗 결과 URL이 복사되었습니다!'))
-        .catch(err => console.error('Clipboard write failed:', err));
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert('🔗 결과 URL이 복사되었습니다!');
+      });
     }
   };
 
-  // 카카오톡 공유 핸들러
+  // 카카오톡 공유
   const handleKakaoShare = () => {
-    if (!(typeof window !== 'undefined' && window.Kakao && window.Kakao.isInitialized())) {
+    if (!(window.Kakao && window.Kakao.isInitialized())) {
       alert('카카오톡 공유 준비 중입니다. 잠시만 기다려주세요.');
       return;
     }
@@ -42,7 +49,9 @@ export default function ShareButton({ summary, chartData, projectName, date, con
             `📈 순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
             summary.roi !== '-' ? `📊 자기자본 수익률: ${Math.round(summary.roi)}%` : null,
             `⏱️ 회수기간: ${summary.payback}년`,
-          ].filter(Boolean).join('\n'),
+          ]
+            .filter(Boolean)
+            .join('\n'),
           imageUrl: `${window.location.origin}/logo-dabin.png`,
           link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
         },
@@ -56,6 +65,7 @@ export default function ShareButton({ summary, chartData, projectName, date, con
       });
     } catch (e) {
       console.error('Kakao share failed:', e);
+      // 폴백: 새 탭으로 열기
       window.open(shareUrl, '_blank');
     }
   };
@@ -82,15 +92,7 @@ export default function ShareButton({ summary, chartData, projectName, date, con
 }
 
 ShareButton.propTypes = {
-  summary: PropTypes.shape({
-    yearlyGen: PropTypes.number,
-    revenue: PropTypes.number,
-    operationCost: PropTypes.number,
-    yearlyRepayment: PropTypes.number,
-    netProfit: PropTypes.number,
-    roi: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    payback: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  }).isRequired,
+  summary: PropTypes.object.isRequired,
   chartData: PropTypes.array.isRequired,
   projectName: PropTypes.string,
   date: PropTypes.string,
