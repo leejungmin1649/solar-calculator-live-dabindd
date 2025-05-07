@@ -1,6 +1,7 @@
+// pages/index.js
 import Head from 'next/head';
-import Script from 'next/script';
 import { useState, useEffect } from 'react';
+import Script from 'next/script';
 import CalculatorForm from '../components/CalculatorForm';
 import ProfitChart from '../components/ProfitChart';
 import ExcelExport from '../components/ExcelExport';
@@ -47,8 +48,9 @@ export default function Home() {
         <a href="http://www.dabinenc.com" target="_blank" rel="noopener noreferrer">
           <img src="/logo-dabin.png" alt="다빈이앤씨 로고" className="mx-auto w-32 h-auto mb-2" />
         </a>
-        <h1 className="text-3xl font-bold tracking-tight text-emerald-400">☀️ 태양광 수익성 계산기</h1>
+        <h1 className="text-3xl font-bold text-emerald-400">☀️ 태양광 수익성 계산기</h1>
         <p className="text-gray-400 mt-1 text-sm">실시간 수익 분석 & Excel 보고서 제공</p>
+        {/* 전화 */}
         <p className="text-gray-300 mt-1 text-sm flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mr-1 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
             <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21 11.36 11.36 0 003.55.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.55 1 1 0 01-.21 1.11l-2.24 2.13z" />
@@ -56,6 +58,7 @@ export default function Home() {
           <a href="tel:0424841108" className="underline hover:text-emerald-400">042-484-1108</a>
           <span className="ml-2">(태양광 투자, 토지개발, 유통, 공사, 금융, RE100 문의)</span>
         </p>
+        {/* 블로그 */}
         <p className="text-gray-300 mt-1 text-sm flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mr-1 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
             <path d="M4.18 15.82a2.18 2.18 0 102.18 2.18 2.18 2.18 0 00-2.18-2.18zM2 5.5v3a11.5 11.5 0 0111.5 11.5h-3A8.5 8.5 0 002 8.5zm0 6v3a5.5 5.5 0 015.5 5.5h3a8.5 8.5 0 00-8.5-8.5z" />
@@ -112,7 +115,14 @@ export default function Home() {
             </div>
             <div className="mt-6 text-center">
               <ExcelExport summary={summary} chartData={chartData} />
-              <ShareButton summary={summary} chartData={chartData} projectName={projectName} date={date} contractAmount={contractAmount} contractCapacity={contractCapacity} />
+              <ShareButton
+                summary={summary}
+                chartData={chartData}
+                projectName={projectName}
+                date={date}
+                contractAmount={contractAmount}
+                contractCapacity={contractCapacity}
+              />
             </div>
           </>
         )}
@@ -124,7 +134,7 @@ export default function Home() {
             <li>💸 총 수익은 SMP + REC 기준 수익을 반영합니다.</li>
             <li>🛠️ 순수익은 운영비용, 대출 원리금 상환을 제외한 실제 수익입니다.</li>
             <li>📊 자기자본 수익률은 연간 순수익 ÷ 자기자본 × 100 입니다.</li>
-            <li>📊 대출금 수익률은 연간 순수익 ÷ 대출금 × 100 입니다.</li>
+            <li>📊 대출금 수익률은 연간 순수익 ÷ 대출금 × 100 입니다。</li>
             <li>⏱️ 회수기간은 투자금 회수까지 예상되는 연도 수입니다。</li>
           </ul>
           <p className="mt-3 text-xs text-gray-500">
