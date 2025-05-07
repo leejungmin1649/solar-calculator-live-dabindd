@@ -1,4 +1,3 @@
-// components/ShareButton.js
 import { useEffect, useState, useRef } from 'react';
 import { compressToEncodedURIComponent } from 'lz-string';
 import PropTypes from 'prop-types';
@@ -22,27 +21,22 @@ export default function ShareButton({
     setShareUrl(`${window.location.origin}?data=${encoded}`);
   }, [summary, chartData, projectName, date, contractAmount, contractCapacity]);
 
-  // 2) 카카오톡 버튼 바인딩 (모바일)
-  useEffect(() => {
-    if (
-      kakaoBtnRef.current &&
-      window.Kakao &&
-      window.Kakao.isInitialized() &&
-      shareUrl
-    ) {
-      window.Kakao.Link.createDefaultButton({
-        container: kakaoBtnRef.current,
-        objectType: 'feed',
-        content: {
-          title: projectName || '태양광 수익성 결과',
-          description: `총 수익: ${summary.revenue.toLocaleString()}원\n순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
-          imageUrl: `${window.location.origin}/logo-dabin.png`,
-          link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
-        },
-        buttons: [{ title: '결과 확인하기', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } }],
-      });
-    }
-  }, [shareUrl, summary, projectName]);
+  // 2) 카카오톡 공유 핸들러 (모바일·데스크톱)
+  const handleKakaoShare = () => {
+    if (!window.Kakao || !window.Kakao.isInitialized()) return;
+    window.Kakao.Link.sendDefault({
+      objectType: 'feed',
+      content: {
+        title: projectName || '태양광 수익성 결과',
+        description: `총 수익: ${summary.revenue.toLocaleString()}원\n순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
+        imageUrl: `${window.location.origin}/logo-dabin.png`,
+        link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
+      },
+      buttons: [
+        { title: '결과 확인하기', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } },
+      ],
+    });
+  };
 
   // 3) 클립보드 복사
   const copyToClipboard = async () => {
@@ -67,7 +61,6 @@ export default function ShareButton({
         console.error('Web Share failed:', err);
       }
     } else {
-      // Web Share API 미지원 시 클립보드 복사로 대체
       copyToClipboard();
     }
   };
@@ -84,7 +77,7 @@ export default function ShareButton({
         🔗 URL 복사
       </button>
 
-      {/* Web Share (데스크톱 또는 모바일 모두 가능) */}
+      {/* Web Share (데스크톱 + 모바일) */}
       <button
         onClick={handleWebShare}
         className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow"
@@ -92,10 +85,11 @@ export default function ShareButton({
         📤 공유하기
       </button>
 
-      {/* 카카오톡 (모바일 전용) */}
+      {/* 카카오톡 공유 */}
       <button
-        ref={kakaoBtnRef}
-        className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-full shadow"
+        onClick={handleKakaoShare}
+        disabled={!shareUrl}
+        className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-full shadow disabled:opacity-50"
       >
         💬 카카오톡
       </button>
