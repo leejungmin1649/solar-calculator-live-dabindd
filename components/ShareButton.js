@@ -4,35 +4,15 @@ import PropTypes from 'prop-types';
 
 export default function ShareButton({ summary, chartData, projectName, date, contractAmount, contractCapacity }) {
   const [shareUrl, setShareUrl] = useState('');
-  const [kakaoReady, setKakaoReady] = useState(false);
 
-  // 1) 결과 데이터를 URL로 인코딩
+  // 결과 데이터를 URL로 인코딩
   useEffect(() => {
     if (!summary) return;
     const data = { summary, chartData, projectName, date, contractAmount, contractCapacity };
     const encoded = compressToEncodedURIComponent(JSON.stringify(data));
-    const base = typeof window !== 'undefined' ? window.location.origin : '';
+    const base = window.location.origin;
     setShareUrl(`${base}?data=${encoded}`);
   }, [summary, chartData, projectName, date, contractAmount, contractCapacity]);
-
-  // 2) Kakao SDK 준비 및 초기화 폴링
-  useEffect(() => {
-    let timer;
-    const initKakao = () => {
-      if (typeof window !== 'undefined' && window.Kakao && window.Kakao.Link) {
-        if (!window.Kakao.isInitialized()) {
-          const key = process.env.NEXT_PUBLIC_KAKAO_KEY;
-          window.Kakao.init(key);
-          console.log('Kakao SDK initialized with key:', key);
-        }
-        setKakaoReady(true);
-      } else {
-        timer = setTimeout(initKakao, 100);
-      }
-    };
-    initKakao();
-    return () => clearTimeout(timer);
-  }, []);
 
   // URL 복사 핸들러
   const copyToClipboard = () => {
@@ -43,9 +23,9 @@ export default function ShareButton({ summary, chartData, projectName, date, con
     }
   };
 
-  // 카카오톡 공유 핸들러 (fallback 포함)
+  // 카카오톡 공유 핸들러
   const handleKakaoShare = () => {
-    if (!kakaoReady) {
+    if (!(typeof window !== 'undefined' && window.Kakao && window.Kakao.isInitialized())) {
       alert('카카오톡 공유 준비 중입니다. 잠시만 기다려주세요.');
       return;
     }
@@ -72,11 +52,10 @@ export default function ShareButton({ summary, chartData, projectName, date, con
             link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
           },
         ],
-        installTalk: true, // 카카오톡 설치 필요시 안내
+        installTalk: true,
       });
     } catch (e) {
       console.error('Kakao share failed:', e);
-      // fallback: 새 탭으로 URL 열기
       window.open(shareUrl, '_blank');
     }
   };
@@ -94,8 +73,7 @@ export default function ShareButton({ summary, chartData, projectName, date, con
       </button>
       <button
         onClick={handleKakaoShare}
-        disabled={!kakaoReady}
-        className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-full shadow transition disabled:opacity-50"
+        className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-full shadow transition"
       >
         💬 카카오톡 공유
       </button>
