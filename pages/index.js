@@ -1,7 +1,6 @@
-// pages/index.js
 import Head from 'next/head';
-import { useState, useEffect } from 'react';
 import Script from 'next/script';
+import { useState, useEffect } from 'react';
 import CalculatorForm from '../components/CalculatorForm';
 import ProfitChart from '../components/ProfitChart';
 import ExcelExport from '../components/ExcelExport';
@@ -39,7 +38,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
       {/* Kakao SDK 로드 */}
-      <Script src="https://developers.kakao.com/sdk/js/kakao.min.js" strategy="afterInteractive" />
+      <Script
+        src="https://developers.kakao.com/sdk/js/kakao.min.js"
+        strategy="afterInteractive"
+      />
       <Head>
         <title>태양광 수익성 계산기</title>
       </Head>
@@ -130,10 +132,10 @@ export default function Home() {
         <div className="mt-12 text-sm text-gray-300 space-y-2 border-t border-gray-700 pt-6">
           <p className="font-semibold">📌 결과 요약 안내</p>
           <ul className="list-disc list-inside space-y-1">
-            <li>🔋 예상 발전량은 설치용량과 일일 발전시간을 기준으로 추정한 연간 발전량입니다.</li>
-            <li>💸 총 수익은 SMP + REC 기준 수익을 반영합니다.</li>
-            <li>🛠️ 순수익은 운영비용, 대출 원리금 상환을 제외한 실제 수익입니다.</li>
-            <li>📊 자기자본 수익률은 연간 순수익 ÷ 자기자본 × 100 입니다.</li>
+            <li>🔋 예상 발전량은 설치용량과 일일 발전시간을 기준으로 추정한 연간 발전량입니다。</li>
+            <li>💸 총 수익은 SMP + REC 기준 수익을 반영합니다。</li>
+            <li>🛠️ 순수익은 운영비용, 대출 원리금 상환을 제외한 실제 수익입니다。</li>
+            <li>📊 자기자본 수익률은 연간 순수익 ÷ 자기자본 × 100 입니다。</li>
             <li>📊 대출금 수익률은 연간 순수익 ÷ 대출금 × 100 입니다。</li>
             <li>⏱️ 회수기간은 투자금 회수까지 예상되는 연도 수입니다。</li>
           </ul>
