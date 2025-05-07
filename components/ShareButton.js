@@ -1,11 +1,14 @@
+// components/ShareButton.js
 import { useEffect, useState } from 'react';
 import { compressToEncodedURIComponent } from 'lz-string';
 import PropTypes from 'prop-types';
 
-export default function ShareButton({ summary, chartData, projectName, date, contractAmount, contractCapacity }) {
+export default function ShareButton({
+  summary, chartData, projectName, date, contractAmount, contractCapacity
+}) {
   const [shareUrl, setShareUrl] = useState('');
 
-  // 생성된 결과를 URL로 변환
+  // 1) 결과 데이터를 URL로 인코딩
   useEffect(() => {
     if (!summary) return;
     const data = { summary, chartData, projectName, date, contractAmount, contractCapacity };
@@ -14,20 +17,21 @@ export default function ShareButton({ summary, chartData, projectName, date, con
     setShareUrl(`${base}?data=${encoded}`);
   }, [summary, chartData, projectName, date, contractAmount, contractCapacity]);
 
-  // Kakao SDK 초기화
+  // 2) Kakao SDK 초기화
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Kakao) {
       const key = process.env.NEXT_PUBLIC_KAKAO_KEY;
       if (!window.Kakao.isInitialized()) {
         window.Kakao.init(key);
+        console.log('Kakao init with key:', key);
       }
     }
   }, []);
 
-  // 카카오톡 공유 핸들러
+  // 3) 카카오톡 공유
   const handleKakaoShare = () => {
     if (!window.Kakao || !window.Kakao.isInitialized()) {
-      console.error('Kakao SDK 초기화 실패');
+      console.error('Kakao SDK 초기화되지 않음');
       return;
     }
     window.Kakao.Link.sendDefault({
@@ -47,7 +51,7 @@ export default function ShareButton({ summary, chartData, projectName, date, con
     });
   };
 
-  // URL 복사 핸들러
+  // 4) URL 복사
   const copyToClipboard = () => {
     if (navigator.clipboard && shareUrl) {
       navigator.clipboard.writeText(shareUrl).then(() => {
