@@ -14,7 +14,7 @@ export default function ShareButton({
   const kakaoBtnRef = useRef(null);
   const [shareUrl, setShareUrl] = useState('');
 
-  // 1) 공유 URL 생성 (origin + pathname 포함)
+  // 1) 공유 URL 생성 (origin + pathname + ?data=…)
   useEffect(() => {
     if (!summary) return;
     const payload = { summary, chartData, projectName, date, contractAmount, contractCapacity };
@@ -23,24 +23,29 @@ export default function ShareButton({
     setShareUrl(`${origin}${pathname}?data=${encoded}`);
   }, [summary, chartData, projectName, date, contractAmount, contractCapacity]);
 
-  // 2) 버튼 바인딩
+  // 2) 카카오 버튼 바인딩 (mobileWebUrl + webUrl 모두 설정)
   useEffect(() => {
-    if (!shareUrl || !window.Kakao) return;
+    if (!shareUrl || !window.Kakao || !window.Kakao.isInitialized()) return;
+
     window.Kakao.Link.createDefaultButton({
       container: kakaoBtnRef.current,
       objectType: 'feed',
       content: {
         title: projectName || '태양광 수익성 결과',
-        description: `총 수익: ${summary.revenue.toLocaleString()}원\n순수익: ${Math.round(
-          summary.netProfit
-        ).toLocaleString()}원`,
+        description: `총 수익: ${summary.revenue.toLocaleString()}원\n순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
         imageUrl: `${window.location.origin}/logo-dabin.png`,
-        link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
+        link: {
+          mobileWebUrl: shareUrl,
+          webUrl: shareUrl,
+        },
       },
       buttons: [
         {
           title: '결과 확인하기',
-          link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
+          link: {
+            mobileWebUrl: shareUrl,
+            webUrl: shareUrl,
+          },
         },
       ],
     });
