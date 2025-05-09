@@ -14,12 +14,13 @@ export default function ShareButton({
   const kakaoBtnRef = useRef(null);
   const [shareUrl, setShareUrl] = useState('');
 
-  // 1) 공유 URL 생성
+  // 1) 공유 URL 생성 (origin + pathname 포함)
   useEffect(() => {
     if (!summary) return;
     const payload = { summary, chartData, projectName, date, contractAmount, contractCapacity };
     const encoded = compressToEncodedURIComponent(JSON.stringify(payload));
-    setShareUrl(`${window.location.origin}?data=${encoded}`);
+    const { origin, pathname } = window.location;
+    setShareUrl(`${origin}${pathname}?data=${encoded}`);
   }, [summary, chartData, projectName, date, contractAmount, contractCapacity]);
 
   // 2) 버튼 바인딩
@@ -30,7 +31,9 @@ export default function ShareButton({
       objectType: 'feed',
       content: {
         title: projectName || '태양광 수익성 결과',
-        description: `총 수익: ${summary.revenue.toLocaleString()}원\n순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
+        description: `총 수익: ${summary.revenue.toLocaleString()}원\n순수익: ${Math.round(
+          summary.netProfit
+        ).toLocaleString()}원`,
         imageUrl: `${window.location.origin}/logo-dabin.png`,
         link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
       },
