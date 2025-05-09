@@ -11,7 +11,7 @@ function MyApp({ Component, pageProps }) {
         strategy="afterInteractive"
         onLoad={() => {
           if (window.Kakao && !window.Kakao.isInitialized()) {
-            window.Kakao.init('f5b4cfb16c5b2f8e213a1549a009307a');
+            window.Kakao.init('a02ad11689f9d4b1ffd2a081c08d5270');
             console.log('✅ Kakao SDK initialized');
           }
         }}
