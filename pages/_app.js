@@ -1,3 +1,4 @@
+// pages/_app.js
 import '../styles/globals.css';
 import Script from 'next/script';
 
@@ -11,6 +12,7 @@ function MyApp({ Component, pageProps }) {
         onLoad={() => {
           if (window.Kakao && !window.Kakao.isInitialized()) {
             window.Kakao.init('f5b4cfb16c5b2f8e213a1549a009307a');
+            console.log('✅ Kakao SDK initialized');
           }
         }}
       />
