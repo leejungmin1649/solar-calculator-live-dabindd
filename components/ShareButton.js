@@ -1,5 +1,4 @@
 // components/ShareButton.js
-import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { compressToEncodedURIComponent } from 'lz-string';
 import PropTypes from 'prop-types';
@@ -13,73 +12,75 @@ export default function ShareButton({
   date,
   contractAmount,
   contractCapacity,
+  className = '',
 }) {
   const router = useRouter();
-  const kakaoBtnRef = useRef(null);
 
-  useEffect(() => {
-    if (!router.isReady || !summary) return;
+  // 데이터 압축 및 공유 URL 생성
+  const payload = { summary, chartData, projectName, date, contractAmount, contractCapacity };
+  const encoded = summary
+    ? compressToEncodedURIComponent(JSON.stringify(payload))
+    : '';
+  const basePath = router.asPath.split('?')[0];
+  const shareUrl =
+    typeof window !== 'undefined' && encoded
+      ? `${window.location.origin}${basePath}?data=${encoded}`
+      : '';
 
-    // 1) 공유 URL 생성
-    const payload = { summary, chartData, projectName, date, contractAmount, contractCapacity };
-    const encoded = compressToEncodedURIComponent(JSON.stringify(payload));
-    const basePath = router.asPath.split('?')[0];
-    const shareUrl = `${window.location.origin}${basePath}?data=${encoded}`;
-    console.log('▶️ 공유할 URL:', shareUrl);
-
-    // 2) SDK & 버튼 바인딩 재시도 함수
-    const bindKakao = () => {
-      if (window.Kakao && window.Kakao.isInitialized()) {
-        window.Kakao.Link.createDefaultButton({
-          container: kakaoBtnRef.current,
-          objectType: 'feed',
-          content: {
-            title: projectName || '태양광 수익성 결과',
-            description: `총 수익: ${summary.revenue.toLocaleString()}원\n순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
-            imageUrl: `${window.location.origin}/logo-dabin.png`,
-            link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
-          },
-          buttons: [
-            {
-              title: '결과 확인하기',
-              link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
-            },
-          ],
-        });
-        console.log('✅ Kakao link button created');
-      } else {
-        // 아직 SDK 준비 전이면 100ms 뒤에 재시도
-        setTimeout(bindKakao, 100);
-      }
-    };
-
-    // SDK 초기화 보장
-    if (window.Kakao && !window.Kakao.isInitialized()) {
+  // 카카오 SDK 초기화 및 공유
+  const handleShare = () => {
+    if (typeof window === 'undefined' || !window.Kakao) return;
+    if (!window.Kakao.isInitialized()) {
       window.Kakao.init(KAKAO_KEY);
-      console.log('🔧 Kakao SDK init in ShareButton');
     }
+    window.Kakao.Link.sendDefault({
+      objectType: 'feed',
+      content: {
+        title: projectName || '태양광 수익성 결과',
+        description:
+          `총 수익: ${summary.revenue.toLocaleString()}원\n` +
+          `순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
+        imageUrl: `${window.location.origin}/logo-dabin.png`,
+        link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
+      },
+      buttons: [
+        {
+          title: '결과 확인하기',
+          link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
+        },
+      ],
+    });
+  };
 
-    bindKakao();
-  }, [
-    router.isReady,
-    router.asPath,
-    summary,
-    chartData,
-    projectName,
-    date,
-    contractAmount,
-    contractCapacity,
-  ]);
+  // 클립보드 복사
+  const handleCopy = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      alert('💾 링크가 복사되었습니다!');
+    } catch (err) {
+      console.error('링크 복사 실패:', err);
+    }
+  };
 
   if (!summary) return null;
   return (
-    <a
-      ref={kakaoBtnRef}
-      role="button"
-      className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-2 rounded w-full sm:w-auto text-center cursor-pointer select-none"
-    >
-      💬 카카오톡으로 공유
-    </a>
+    <div className={`flex flex-col sm:flex-row sm:justify-center gap-2 ${className}`}>      
+      <button
+        type="button"
+        onClick={handleShare}
+        className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-2 rounded w-full sm:w-auto text-center"
+      >
+        💬 카카오톡으로 공유
+      </button>
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded w-full sm:w-auto text-center"
+      >
+        🔗 링크 복사
+      </button>
+    </div>
   );
 }
 
@@ -90,4 +91,5 @@ ShareButton.propTypes = {
   date: PropTypes.string,
   contractAmount: PropTypes.string,
   contractCapacity: PropTypes.string,
+  className: PropTypes.string,
 };
