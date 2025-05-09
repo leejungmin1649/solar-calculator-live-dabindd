@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from 'react';
 import { compressToEncodedURIComponent } from 'lz-string';
 import PropTypes from 'prop-types';
 
+const KAKAO_KEY = 'f5b4cfb16c5b2f8e213a1549a009307a';
+
 export default function ShareButton({
   summary,
   chartData,
@@ -14,25 +16,35 @@ export default function ShareButton({
   const kakaoBtnRef = useRef(null);
   const [shareUrl, setShareUrl] = useState('');
 
-  // 1) 공유 URL 생성 (origin + pathname + ?data=…)
+  // 1) 공유 URL 생성
   useEffect(() => {
     if (!summary) return;
     const payload = { summary, chartData, projectName, date, contractAmount, contractCapacity };
     const encoded = compressToEncodedURIComponent(JSON.stringify(payload));
-    const { origin, pathname } = window.location;
-    setShareUrl(`${origin}${pathname}?data=${encoded}`);
+    // 현재 전체 URL(경로+쿼리)을 가져와 ?data= 붙임
+    const base = window.location.href.split('?')[0];
+    const finalUrl = `${base}?data=${encoded}`;
+    console.log('▶️ 공유할 URL:', finalUrl);
+    setShareUrl(finalUrl);
   }, [summary, chartData, projectName, date, contractAmount, contractCapacity]);
 
-  // 2) 카카오 버튼 바인딩 (mobileWebUrl + webUrl 모두 설정)
+  // 2) 카카오 SDK 바인딩 (init 보장)
   useEffect(() => {
-    if (!shareUrl || !window.Kakao || !window.Kakao.isInitialized()) return;
+    if (!shareUrl || !window.Kakao) return;
+    // SDK 초기화가 안됐으면 초기화
+    if (!window.Kakao.isInitialized()) {
+      window.Kakao.init(KAKAO_KEY);
+      console.log('🔧 Kakao SDK re-init in ShareButton');
+    }
 
     window.Kakao.Link.createDefaultButton({
       container: kakaoBtnRef.current,
       objectType: 'feed',
       content: {
         title: projectName || '태양광 수익성 결과',
-        description: `총 수익: ${summary.revenue.toLocaleString()}원\n순수익: ${Math.round(summary.netProfit).toLocaleString()}원`,
+        description: `총 수익: ${summary.revenue.toLocaleString()}원\n순수익: ${Math.round(
+          summary.netProfit
+        ).toLocaleString()}원`,
         imageUrl: `${window.location.origin}/logo-dabin.png`,
         link: {
           mobileWebUrl: shareUrl,
@@ -49,6 +61,7 @@ export default function ShareButton({
         },
       ],
     });
+    console.log('✅ Kakao link button created');
   }, [shareUrl, projectName, summary]);
 
   if (!summary) return null;
