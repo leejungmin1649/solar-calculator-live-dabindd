@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { compressToEncodedURIComponent } from 'lz-string';
 import PropTypes from 'prop-types';
 
-const KAKAO_KEY = 'f5b4cfb16c5b2f8e213a1549a009307a';
+const KAKAO_KEY = 'a02ad11689f9d4b1ffd2a081c08d5270';
 
 export default function ShareButton({
   summary,
