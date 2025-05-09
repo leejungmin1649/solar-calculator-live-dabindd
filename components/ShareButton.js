@@ -18,7 +18,7 @@ export default function ShareButton({
   const handleShare = () => {
     if (typeof window === 'undefined' || !window.Kakao) return;
     if (!window.Kakao.isInitialized()) {
-      window.Kakao.init(a02ad11689f9d4b1ffd2a081c08d5270);
+      window.Kakao.init('a02ad11689f9d4b1ffd2a081c08d5270');
     }
 
     const payload = { summary, chartData, projectName, date, contractAmount, contractCapacity };
