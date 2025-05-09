@@ -73,12 +73,13 @@ export default function ShareButton({
 
   if (!summary) return null;
   return (
-    <button
+    <div
       ref={kakaoBtnRef}
-      className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-2 rounded"
+      role="button"
+      className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-2 rounded w-full sm:w-auto text-center cursor-pointer select-none"
     >
       💬 카카오톡으로 공유
-    </button>
+    </div>
   );
 }
 
