@@ -40,9 +40,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
      {/* Kakao SDK 초기화 */}
- <Script
- src="https://developers.kakao.com/sdk/js/kakao.min.js"
- strategy="afterInteractive"
+ <Script src="https://developers.kakao.com/sdk/js/kakao.min.js" strategy="afterInteractive"
 onLoad={() => {
  if (window.Kakao && !window.Kakao.isInitialized()) {
   window.Kakao.init('a02ad11689f9d4b1ffd2a081c08d5270');
@@ -50,7 +48,7 @@ onLoad={() => {
     }}
   />
      
-      <Head>
+  <Head>
         <title>태양광 수익성 계산기</title>
       </Head>
 
