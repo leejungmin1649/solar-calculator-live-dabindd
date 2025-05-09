@@ -132,12 +132,12 @@ export default function Home() {
             </div>
             <div className="my-8 flex flex-col sm:flex-row sm:justify-center gap-4">
   <ExcelExport
-    className="w-full sm:w-auto"
+    className="flex-1"
     summary={summary}
     chartData={chartData}
   />
   <ShareButton
-    className="w-full sm:w-auto"
+    className="flex-1"
     summary={summary}
     chartData={chartData}
     projectName={projectName}
