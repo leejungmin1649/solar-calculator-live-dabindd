@@ -131,21 +131,22 @@ export default function Home() {
               <div>⏱️ 회수기간: {typeof summary.payback === 'number' ? `${summary.payback} 년` : '-'}</div>
             </div>
             <div className="my-8 flex flex-col sm:flex-row sm:justify-center gap-4">
-  <ExcelExport
-    className="flex-1"
-    summary={summary}
-    chartData={chartData}
-  />
-  <ShareButton
-    className="flex-1"
-    summary={summary}
-    chartData={chartData}
-    projectName={projectName}
-    date={date}
-    contractAmount={contractAmount}
-    contractCapacity={contractCapacity}
-  />
-</div>
++ <div className="my-8 flex flex-col sm:flex-row sm:justify-center gap-4">
++   <ExcelExport
++     className="inline-flex items-center justify-center w-full sm:w-48 h-10 leading-10 text-sm rounded px-4 flex-1 bg-yellow-500 hover:bg-yellow-600 text-black"
++     summary={summary}
++     chartData={chartData}
++   />
++   <ShareButton
++     className="inline-flex items-center justify-center w-full sm:w-48 h-10 leading-10 text-sm rounded px-4 flex-1 bg-yellow-400 hover:bg-yellow-500 text-black"
++     summary={summary}
++     chartData={chartData}
++     projectName={projectName}
++     date={date}
++     contractAmount={contractAmount}
++     contractCapacity={contractCapacity}
++   />
++ </div>
           </>
         )}
 
