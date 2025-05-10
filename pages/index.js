@@ -84,6 +84,17 @@ export default function Home() {
         </a>
         <h1 className="text-3xl font-bold text-emerald-400">☀️ 태양광 수익성 계산기</h1>
         <p className="text-gray-400 mt-1 text-sm">실시간 수익 분석 & Excel 보고서 제공</p>
+       <p className="text-gray-300 mt-1 text-sm">
+  📖{' '}
+  <a
+    href="https://blog.naver.com/dabincoltd2025"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="underline hover:text-emerald-400"
+  >
+    다빈이앤씨 블로그
+  </a>
+</p>   
       </header>
 
       {/* 메인 */}
