@@ -1,8 +1,9 @@
+// components/ExcelExport.js
 'use client';
 
 import * as XLSX from 'xlsx';
 
-export default function ExcelExport({ summary, chartData }) {
+export default function ExcelExport({ summary, chartData, className = '' }) {
   const handleExport = () => {
     const wb = XLSX.utils.book_new();
 
@@ -21,7 +22,7 @@ export default function ExcelExport({ summary, chartData }) {
     const summarySheet = XLSX.utils.aoa_to_sheet(summarySheetData);
     XLSX.utils.book_append_sheet(wb, summarySheet, '수익 요약');
 
-    // 2. 연간 수익 데이터 시트 (상환금액 추가)
+    // 2. 연간 수익 데이터 시트
     if (chartData?.length > 0) {
       const dataSheetData = [
         ['연도', '연간 순수익 (KRW)', '누적 순수익 (KRW)', '연간 상환금 (KRW)']
@@ -30,9 +31,9 @@ export default function ExcelExport({ summary, chartData }) {
       chartData.forEach((item) => {
         dataSheetData.push([
           item.year,
-          item.netProfit?.toLocaleString() || 0,
-          item.cumulativeProfit?.toLocaleString() || 0,
-          item.yearlyRepayment?.toLocaleString() || 0, // ⭐ 연간 상환금 추가
+          item.netProfit?.toLocaleString() || '0',
+          item.cumulativeProfit?.toLocaleString() || '0',
+          item.yearlyRepayment?.toLocaleString() || '0'
         ]);
       });
 
@@ -45,10 +46,19 @@ export default function ExcelExport({ summary, chartData }) {
 
   return (
     <button
+      type="button"
       onClick={handleExport}
-      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded shadow mt-4"
+      className={`
+        inline-flex items-center justify-center
+        w-full sm:w-48 h-10
+        text-sm leading-none
+        rounded px-4 flex-1
+        bg-yellow-500 hover:bg-yellow-600 text-white shadow
+        ${className}
+      `}
     >
-      📊 Excel 다운로드
+      <span className="mr-2 flex-shrink-0">📊</span>
+      <span className="leading-none">Excel 다운로드</span>
     </button>
   );
 }
