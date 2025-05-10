@@ -6,8 +6,8 @@ import * as XLSX from 'xlsx';
 export default function ExcelExport({
   summary,
   chartData,
-  contractAmount = '',
   contractCapacity = '',
+  totalInvestment = 0,
   className = '',
 }) {
   const handleExport = () => {
@@ -17,7 +17,7 @@ export default function ExcelExport({
     const summarySheetData = [
       ['항목', '값'],
       ['🔋 설치 용량', contractCapacity ? `${contractCapacity} kW` : '- kW'],
-      ['💳 계약 금액', contractAmount ? `${parseInt(contractAmount).toLocaleString()} 원` : '- 원'],
+      ['💳 계약 금액', totalInvestment ? `${totalInvestment.toLocaleString()} 원` : '- 원'],
       ['🏦 대출 금액', summary?.loan ? `${summary.loan.toLocaleString()} 원` : '- 원'],
       ['📌 예상 발전량', `${summary?.yearlyGen?.toLocaleString()} kWh`],
       ['💰 총 수익', `${summary?.revenue?.toLocaleString()} KRW`],
