@@ -1,4 +1,3 @@
-// pages/index.js
 import Head from 'next/head';
 import Script from 'next/script';
 import { useState, useEffect } from 'react';
@@ -24,11 +23,10 @@ export default function Home() {
   const initKakao = () => {
     if (typeof window !== 'undefined' && window.Kakao && !window.Kakao.isInitialized()) {
       window.Kakao.init('a02ad11689f9d4b1ffd2a081c08d5270');
-      console.log('✅ Kakao SDK initialized');
     }
   };
 
-  // URL 복원 함수
+  // URL 파라미터에서 data 복원
   const restoreFromUrl = () => {
     const raw = new URLSearchParams(window.location.search).get('data');
     if (!raw) return;
@@ -46,9 +44,7 @@ export default function Home() {
     }
   };
 
-  // 페이지 로드 시 init & 복원
   useEffect(() => {
-    if (typeof window === 'undefined') return;
     initKakao();
     restoreFromUrl();
   }, []);
