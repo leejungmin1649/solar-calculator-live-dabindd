@@ -132,7 +132,7 @@ export default function Home() {
           <>
             <section className="mt-10 bg-gray-700 p-4 rounded-lg shadow text-sm space-y-1">
               <h2 className="text-lg font-semibold text-emerald-400 mb-2">📊 결과 요약</h2>
-              <div>🔋  설치 용량: {contractCapacity || '-'} kW</div>
+              <div>🔋  설치 용량: {contractCapacity ? `${contractCapacity} kW` : '- kW'}</div>
               <div>🏦 대출 금액: {summary.loan?.toLocaleString() || '-'} 원</div>
               <div>🏦 연간 원리금 상환: {summary.yearlyRepayment.toLocaleString()} 원</div>
               <div>📌 예상 발전량: {summary.yearlyGen.toLocaleString()} kWh</div>
