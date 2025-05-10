@@ -1,6 +1,7 @@
+// components/CalculatorForm.js
 import { useState, useEffect } from 'react';
 
-export default function CalculatorForm({ onDataChange }) {
+export default function CalculatorForm({ onDataChange, onMetaChange }) {
   const [form, setForm] = useState({
     capacity: '100',
     hours: '3.5',
@@ -15,7 +16,7 @@ export default function CalculatorForm({ onDataChange }) {
     deferPeriod: '0'
   });
 
-  // ✅ 1. 최초 마운트 시 localStorage에서 불러오기
+  // 1. Load from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('solarCalcForm');
     if (saved) {
@@ -23,10 +24,20 @@ export default function CalculatorForm({ onDataChange }) {
     }
   }, []);
 
-  // ✅ 2. form 값이 바뀔 때 localStorage에 저장
+  // 2. Save to localStorage when form changes
   useEffect(() => {
     localStorage.setItem('solarCalcForm', JSON.stringify(form));
   }, [form]);
+
+  // 3. Notify parent of meta changes (contractAmount, contractCapacity)
+  useEffect(() => {
+    if (onMetaChange) {
+      onMetaChange({
+        contractAmount: form.equity,
+        contractCapacity: form.capacity
+      });
+    }
+  }, [form.equity, form.capacity, onMetaChange]);
 
   const formatNumber = (value) => {
     const number = value.toString().replace(/,/g, '');
@@ -43,6 +54,7 @@ export default function CalculatorForm({ onDataChange }) {
 
   const parseNumber = (v) => parseFloat((v || '0').toString().replace(/,/g, '')) || 0;
 
+  // 4. Calculate data and summary, then notify parent
   useEffect(() => {
     const capacity = parseNumber(form.capacity);
     const hours = parseNumber(form.hours);
@@ -60,16 +72,18 @@ export default function CalculatorForm({ onDataChange }) {
     const revenue = yearlyGen * (smp + rec * weight);
     const monthlyRate = interest / 100 / 12;
     const nper = (term - deferPeriod) * 12;
-    const pmt = nper > 0 ? (monthlyRate * loan) / (1 - Math.pow(1 + monthlyRate, -nper)) : 0;
+    const pmt =
+      nper > 0
+        ? (monthlyRate * loan) / (1 - Math.pow(1 + monthlyRate, -nper))
+        : 0;
 
     let data = [];
     let cumulativeProfit = 0;
     let breakEvenYear = null;
 
     for (let i = 0; i < term; i++) {
-      let yearlyRepayment = i < deferPeriod
-        ? loan * (interest / 100)
-        : pmt * 12;
+      const yearlyRepayment =
+        i < deferPeriod ? loan * (interest / 100) : pmt * 12;
 
       const netProfit = revenue - operationCost - yearlyRepayment;
       cumulativeProfit += netProfit;
@@ -85,19 +99,26 @@ export default function CalculatorForm({ onDataChange }) {
         year: i + 1,
         netProfit,
         cumulativeProfit,
-        yearlyRepayment: Math.round(yearlyRepayment),
+        yearlyRepayment: Math.round(yearlyRepayment)
       });
     }
 
     const lastYear = data[data.length - 1];
     const finalNetProfit = lastYear ? lastYear.netProfit : 0;
-
-    const roi = equity > 0 && finalNetProfit > 0 ? ((finalNetProfit / equity) * 100).toFixed(1) : '-';
-    const loanRoi = loan > 0 && finalNetProfit > 0 ? ((finalNetProfit / loan) * 100).toFixed(1) : '0.0';
+    const roi =
+      equity > 0 && finalNetProfit > 0
+        ? ((finalNetProfit / equity) * 100).toFixed(1)
+        : '-';
+    const loanRoi =
+      loan > 0 && finalNetProfit > 0
+        ? ((finalNetProfit / loan) * 100).toFixed(1)
+        : '0.0';
     const payback = finalNetProfit > 0
-      ? (equity > 0 ? Math.ceil(equity / finalNetProfit)
-          : loan > 0 ? Math.ceil(loan / finalNetProfit)
-          : '-')
+      ? equity > 0
+        ? Math.ceil(equity / finalNetProfit)
+        : loan > 0
+        ? Math.ceil(loan / finalNetProfit)
+        : '-'
       : '-';
 
     const summary = {
@@ -110,11 +131,11 @@ export default function CalculatorForm({ onDataChange }) {
       roi,
       loanRoi,
       equity,
-      loan,
+      loan
     };
 
     onDataChange(data, breakEvenYear, summary);
-  }, [form]);
+  }, [form, onDataChange]);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -129,7 +150,7 @@ export default function CalculatorForm({ onDataChange }) {
         ['loan', '대출금액 (원)'],
         ['interest', '이자율 (%)'],
         ['term', '상환기간 (년)'],
-        ['deferPeriod', '거치기간 (년)'],
+        ['deferPeriod', '거치기간 (년)']
       ].map(([name, label]) => (
         <div key={name}>
           <label className="block mb-1 font-medium text-sm">{label}</label>
