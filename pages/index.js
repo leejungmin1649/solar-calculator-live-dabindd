@@ -238,6 +238,9 @@ export default function Home() {
                 <li>📊 대출금 수익률: 순수익 ÷ 대출금 × 100 (%)</li>
                 <li>⏱️ 회수기간: 투자금 회수까지 예상 연수 (년)</li>
               </ul>
+              <p className="mt-3 text-xs text-gray-500">
+  ※ 본 계산기는 참고용이며, 실제와 다를 수 있으므로, 법적효력이 없음을 안내드립니다.
+</p>
             </section>
           </>
         )}
