@@ -9,16 +9,18 @@ export default function ExcelExport({ summary, chartData, className = '' }) {
 
     // 1. 결과 요약 시트
     const summarySheetData = [
-      ['항목', '값'],
-      ['예상 발전량', `${summary?.yearlyGen?.toLocaleString()} kWh`],
-      ['총 수익', `${summary?.revenue?.toLocaleString()} KRW`],
-      ['운영비용', `${summary?.operationCost?.toLocaleString()} KRW`],
-      ['연간 원리금 상환(평균)', `${summary?.yearlyRepayment?.toLocaleString()} KRW`],
-      ['순수익', `${summary?.netProfit?.toLocaleString()} KRW`],
-      ['자기자본 수익률', `${summary?.roi}%`],
-      ['대출금 수익률', `${summary?.loanRoi}%`],
-      ['회수기간', typeof summary?.payback === 'number' ? `${summary?.payback} 년` : '-']
-    ];
+  ['항목', '값'],
+  ['🔋 설치 용량', `${contractCapacity} kW`],
+  ['🏦 대출 금액', `${summary?.loan?.toLocaleString() || '-'} 원`],
+  ['📌 예상 발전량', `${summary?.yearlyGen?.toLocaleString()} kWh`],
+  ['💰 총 수익', `${summary?.revenue?.toLocaleString()} KRW`],
+  ['🛠️ 운영비용', `${summary?.operationCost?.toLocaleString()} KRW`],
+  ['🏦 연간 원리금 상환(평균)', `${summary?.yearlyRepayment?.toLocaleString()} KRW`],
+  ['📈 순수익', `${summary?.netProfit?.toLocaleString()} KRW`],
+  ['📊 자기자본 수익률', `${summary?.roi}%`],
+  ['📊 대출금 수익률', `${summary?.loanRoi}%`],
+  ['⏱️ 회수기간', typeof summary?.payback === 'number' ? `${summary?.payback} 년` : '-'],
+];
     const summarySheet = XLSX.utils.aoa_to_sheet(summarySheetData);
     XLSX.utils.book_append_sheet(wb, summarySheet, '수익 요약');
 
