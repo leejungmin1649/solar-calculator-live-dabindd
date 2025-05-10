@@ -13,39 +13,39 @@ export default function ExcelExport({
   const handleExport = () => {
     const wb = XLSX.utils.book_new();
 
-    // 1. 결과 요약 시트
+    // 1. 결과 요약 시트 (값을 숫자로 넣어 Excel이 텍스트가 아닌 숫자로 인식하게 합니다)
     const summarySheetData = [
       ['항목', '값'],
-      ['🔋 설치 용량', contractCapacity ? `${contractCapacity} kW` : '- kW'],
-      ['💳 계약 금액', totalInvestment ? `${totalInvestment.toLocaleString()} 원` : '- 원'],
-      ['🏦 대출 금액', summary?.loan ? `${summary.loan.toLocaleString()} 원` : '- 원'],
-      ['📌 예상 발전량', `${summary?.yearlyGen?.toLocaleString()} kWh`],
-      ['💰 총 수익', `${summary?.revenue?.toLocaleString()} KRW`],
-      ['🛠️ 운영비용', `${summary?.operationCost?.toLocaleString()} KRW`],
-      ['🏦 연간 원리금 상환(평균)', `${summary?.yearlyRepayment?.toLocaleString()} KRW`],
-      ['📈 순수익', `${summary?.netProfit?.toLocaleString()} KRW`],
-      ['📊 자기자본 수익률', `${summary?.roi}%`],
-      ['📊 대출금 수익률', `${summary?.loanRoi}%`],
-      ['⏱️ 회수기간', typeof summary?.payback === 'number' ? `${summary.payback} 년` : '-'],
+      ['🔋 설치 용량 (kW)', contractCapacity ? parseFloat(contractCapacity) : null],
+      ['💳 총 투자금 (원)', totalInvestment || null],
+      ['🏦 대출 금액 (원)', summary?.loan ?? null],
+      ['📌 예상 발전량 (kWh)', summary?.yearlyGen ?? null],
+      ['💰 총 수익 (KRW)', summary?.revenue ?? null],
+      ['🛠️ 운영비용 (KRW)', summary?.operationCost ?? null],
+      ['🏦 연간 원리금 상환(평균) (KRW)', summary?.yearlyRepayment ?? null],
+      ['📈 순수익 (KRW)', summary?.netProfit ?? null],
+      ['📊 자기자본 수익률 (%)', summary?.roi !== '-' ? parseFloat(summary.roi) : null],
+      ['📊 대출금 수익률 (%)', summary?.loanRoi !== '-' ? parseFloat(summary.loanRoi) : null],
+      ['⏱️ 회수기간 (년)', typeof summary?.payback === 'number' ? summary.payback : null],
     ];
+
     const summarySheet = XLSX.utils.aoa_to_sheet(summarySheetData);
+    // 셀 서식 지정 (콤마 구분, 소수점 1자리 등) – 필요 시 z 프로퍼티를 설정할 수 있습니다.
+    // 예: summarySheet['B2'].z = '#,##0.00'; 
+
     XLSX.utils.book_append_sheet(wb, summarySheet, '수익 요약');
 
     // 2. 연간 수익 데이터 시트
-    if (chartData?.length > 0) {
+    if (chartData?.length) {
       const dataSheetData = [
         ['연도', '연간 순수익 (KRW)', '누적 순수익 (KRW)', '연간 상환금 (KRW)'],
-      ];
-
-      chartData.forEach((item) => {
-        dataSheetData.push([
+        ...chartData.map(item => [
           item.year,
-          item.netProfit?.toLocaleString() || '0',
-          item.cumulativeProfit?.toLocaleString() || '0',
-          item.yearlyRepayment?.toLocaleString() || '0',
-        ]);
-      });
-
+          item.netProfit,
+          item.cumulativeProfit,
+          item.yearlyRepayment,
+        ]),
+      ];
       const dataSheet = XLSX.utils.aoa_to_sheet(dataSheetData);
       XLSX.utils.book_append_sheet(wb, dataSheet, '연간 수익 데이터');
     }
