@@ -1,7 +1,7 @@
-// components/ShareButton.js
 import { useRouter } from 'next/router';
 import { compressToEncodedURIComponent } from 'lz-string';
 import PropTypes from 'prop-types';
+import Script from 'next/script';
 
 const KAKAO_KEY = 'a02ad11689f9d4b1ffd2a081c08d5270';
 
@@ -18,7 +18,7 @@ export default function ShareButton({
   const handleShare = () => {
     if (typeof window === 'undefined' || !window.Kakao) return;
     if (!window.Kakao.isInitialized()) {
-      window.Kakao.init('a02ad11689f9d4b1ffd2a081c08d5270');
+      window.Kakao.init(KAKAO_KEY);
     }
 
     const payload = { summary, chartData, projectName, date, contractAmount, contractCapacity };
@@ -46,19 +46,43 @@ export default function ShareButton({
   };
 
   if (!summary) return null;
+
   return (
-    <button
-      type="button"
-      onClick={handleShare}
-      className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-2 rounded w-full sm:w-auto text-center"
-    >
-      💬 카카오톡으로 공유
-    </button>
+    <>
+      {/* 카카오 SDK 로드 (모바일 포함) */}
+      <Script
+        src="https://developers.kakao.com/sdk/js/kakao.js"
+        strategy="beforeInteractive"
+        onLoad={() => {
+          if (window.Kakao && !window.Kakao.isInitialized()) {
+            window.Kakao.init(KAKAO_KEY);
+          }
+        }}
+      />
+      <button
+        type="button"
+        onClick={handleShare}
+        className="
+          inline-flex items-center justify-center
+          w-full sm:w-48
+          h-10
+          bg-yellow-400 hover:bg-yellow-500
+          text-black
+          rounded
+          px-4 text-sm
+        "
+      >
+        💬 카카오톡으로 공유
+      </button>
+    </>
   );
 }
 
 ShareButton.propTypes = {
-  summary: PropTypes.object.isRequired,
+  summary: PropTypes.shape({
+    revenue: PropTypes.number.isRequired,
+    netProfit: PropTypes.number.isRequired,
+  }).isRequired,
   chartData: PropTypes.array.isRequired,
   projectName: PropTypes.string,
   date: PropTypes.string,
