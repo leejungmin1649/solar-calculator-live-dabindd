@@ -84,17 +84,17 @@ export default function Home() {
         </a>
         <h1 className="text-3xl font-bold text-emerald-400">☀️ 태양광 수익성 계산기</h1>
         <p className="text-gray-400 mt-1 text-sm">실시간 수익 분석 & Excel 보고서 제공</p>
-       <p className="text-gray-300 mt-1 text-sm">
-  📖{' '}
-  <a
-    href="https://blog.naver.com/dabincoltd2025"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="underline hover:text-emerald-400"
-  >
-    다빈이앤씨 블로그
-  </a>
-</p>   
+        <p className="text-gray-300 mt-1 text-sm">
+          📖{' '}
+          <a
+            href="https://blog.naver.com/dabincoltd2025"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-emerald-400"
+          >
+            다빈이앤씨 블로그
+          </a>
+        </p>
       </header>
 
       {/* 메인 */}
@@ -132,27 +132,30 @@ export default function Home() {
           <>
             <section className="mt-10 bg-gray-700 p-4 rounded-lg shadow text-sm space-y-1">
               <h2 className="text-lg font-semibold text-emerald-400 mb-2">📊 결과 요약</h2>
-              <div>🔋  설치 용량: {contractCapacity ? `${contractCapacity} kW` : '- kW'}</div>
+              <div>🔋 설치 용량: {contractCapacity ? `${contractCapacity} kW` : '- kW'}</div>
+              <div>💳 계약 금액: {contractAmount ? `${parseInt(contractAmount).toLocaleString()} 원` : '- 원'}</div>
               <div>🏦 대출 금액: {summary.loan?.toLocaleString() || '-'} 원</div>
-              <div>🏦 연간 원리금 상환: {summary.yearlyRepayment.toLocaleString()} 원</div>
               <div>📌 예상 발전량: {summary.yearlyGen.toLocaleString()} kWh</div>
-              <div>💰  총수익: {summary.revenue.toLocaleString()} 원</div>
+              <div>💰 총 수익: {summary.revenue.toLocaleString()} 원</div>
               <div>🧰 운영비용: {summary.operationCost.toLocaleString()} 원</div>
               <div>🏦 연간 원리금 상환: {summary.yearlyRepayment.toLocaleString()} 원</div>
               <div>📈 순수익: {Math.round(summary.netProfit).toLocaleString()} 원</div>
-              {Number(summary.equity) > 0 ? (
-                <div>📊 자기자본 수익률: {`${Math.round(summary.roi)}%`}</div>
-              ) : Number(summary.loan) > 0 ? (
-                <div>📊 대출금 수익률: {`${Math.round(summary.loanRoi)}%`}</div>
-              ) : null}
-              <div>⏱️ 회수기간: {`${summary.payback} 년`}</div>
+              {Number(summary.equity) > 0 && (
+                <div>📊 자기자본 수익률: {summary.roi !== '-' ? `${Math.round(summary.roi)}%` : '-'}</div>
+              )}
+              {Number(summary.loan) > 0 && (
+                <div>📊 대출금 수익률: {summary.loanRoi !== '-' ? `${Math.round(summary.loanRoi)}%` : '-'}</div>
+              )}
+              <div>⏱️ 회수기간: {typeof summary.payback === 'number' ? `${summary.payback} 년` : '-'}</div>
             </section>
 
             <div className="my-8 flex flex-wrap justify-center gap-4">
               <ExcelExport
-                className="inline-flex items-center justify-center w-full sm:w-48 h-10 leading-10 text-sm rounded px-4 bg-yellow-500 hover:bg-yellow-600 text-black"
+                className="inline-flex items-center justify-center w-full sm:w-48 h-10 leading-10 text-sm rounded px-4 bg-yellow-500 hover:bg-yellow-600 text-white shadow"
                 summary={summary}
                 chartData={chartData}
+                contractAmount={contractAmount}
+                contractCapacity={contractCapacity}
               />
               <ShareButton
                 className="inline-flex items-center justify-center w-full sm:w-48 h-10 leading-10 text-sm rounded px-4 bg-yellow-400 hover:bg-yellow-500 text-black"
@@ -176,12 +179,17 @@ export default function Home() {
             <section className="mt-12 text-sm text-gray-300 space-y-2 border-t border-gray-700 pt-6">
               <p className="font-semibold">📌 결과 요약 안내</p>
               <ul className="list-disc list-inside space-y-1">
-                <li>🔋 예상 발전량은 연간 발전량을 추정한 값입니다.</li>
-                <li>💸 총 수익은 SMP + REC 기준 수익을 반영합니다.</li>
-                <li>🛠️ 순수익은 운영비, 원리금 상환을 제외한 실제 수익입니다.</li>
-                <li>📊 자기자본 수익률 = 순수익 ÷ 자기자본 × 100</li>
-                <li>📊 대출금 수익률 = 순수익 ÷ 대출금 × 100</li>
-                <li>⏱️ 회수기간은 투자금 회수까지 걸리는 연수입니다.</li>
+                <li>🔋 설치 용량: 태양광 패널 총 설치 용량 (kW)</li>
+                <li>💳 계약 금액: 전체 프로젝트 투자 금액 (원)</li>
+                <li>🏦 대출 금액: 차입한 대출 총액 (원)</li>
+                <li>🔋 예상 발전량: 설치 용량과 일일 발전시간 기반 예측 연간 발전량 (kWh)</li>
+                <li>💸 총 수익: SMP + REC를 합산한 예상 연간 수익 (원)</li>
+                <li>🛠️ 운영비용: 설비 유지·관리 비용 (원)</li>
+                <li>🏦 연간 원리금 상환: 대출 상환 분할액의 연간 합계 (원)</li>
+                <li>📈 순수익: 총 수익에서 운영비용과 상환액을 제외한 금액 (원)</li>
+                <li>📊 자기자본 수익률: 순수익 ÷ 자기자본 × 100 (%)</li>
+                <li>📊 대출금 수익률: 순수익 ÷ 대출금 × 100 (%)</li>
+                <li>⏱️ 회수기간: 투자금 회수까지 예상되는 연수 (년)</li>
               </ul>
               <p className="mt-3 text-xs text-gray-500">
                 ※ 본 계산기는 참고용이며, 실제와 다를 수 있습니다.
